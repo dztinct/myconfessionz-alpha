@@ -1,0 +1,37 @@
+.navigation {
+    position: relative;
+    width: 400px;
+    height: 70px;
+    background: linear-gradient(155deg, #00fffc, #eee);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.navigation ul li {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    list-style: none;
+    z-index: 1;
+}
+
+.indicator {
+    position: absolute;
+    top: -50%;
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(155deg, #00fffc, #eee);
+    border: 6px solid #06021b;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: .5s;
+}
+
+.navigation ul {
+    transform: translateY(-32px);
+}
+
