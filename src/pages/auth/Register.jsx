@@ -94,7 +94,7 @@ const Register = () => {
 
     // mixed fields
     username: yup.string().required("Username is required").min(4, "Username must be at least 4 characters"),
-    dob: yup.date().required("Date of birth is required").max(new Date(), "Date of birth cannot be in the future"),
+    birthdate: yup.date().required("Date of birth is required").max(new Date(), "Date of birth cannot be in the future"),
     gender: yup.string().required("Gender is required"),
     password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
     confirmPassword: yup.string()
@@ -201,10 +201,10 @@ const Register = () => {
           <input
             type="date" placeholder="dd/mm/yyyy"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("dob")}
+            {...register("birthdate")}
           />
         </div>
-        {errors.dob && <p className="text-red-500">{errors.dob.message}</p>}
+        {errors.birthdate && <p className="text-red-500">{errors.birthdate.message}</p>}
 
         {/* Country */}
         <div className="flex items-center mb-3">
@@ -361,10 +361,10 @@ const Register = () => {
         <div className="flex items-center mb-3">
           <FaCalendarAlt className="text-gray-500 mr-2" />
           <input type="date" placeholder="dd/mm/yyyy" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
-          {...register("dob")}
+          {...register("birthdate")}
           />
         </div>
-        {errors.dob && <p className="text-red-500">{errors.dob.message}</p>}
+        {errors.birthdate && <p className="text-red-500">{errors.birthdate.message}</p>}
 
         {/* Gender */}
         <div className="flex items-center mb-3">
