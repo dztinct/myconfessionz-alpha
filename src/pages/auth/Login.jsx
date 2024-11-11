@@ -71,6 +71,7 @@ const Login = () => {
                 type="text"
                 placeholder="Anonymous Username"
                 {...register("username")}
+                name='username'
                 className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
@@ -84,6 +85,7 @@ const Login = () => {
                 type="email"
                 placeholder="Counselor Email"
                 {...register("email")}
+                name='email'
                 className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
@@ -97,6 +99,7 @@ const Login = () => {
             type="password"
             placeholder="Password"
             {...register("password")}
+            name='password'
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>

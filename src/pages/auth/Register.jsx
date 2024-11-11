@@ -9,79 +9,26 @@ import { AiFillProfile } from "react-icons/ai"
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { Country, State } from 'country-state-city'
 
 const Register = () => {
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [country, setCountry] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [countries, setCountries] = useState(Country.getAllCountries())
+  const [states, setStates] = useState([])
+
+  const [selectedCountry, setSelectedCountry] = useState(null)
+
   const [role, setRole] = useState("anonymous");
 
   const handleRoleChange = (e) => {
     setRole(e.target.value);
-    }
+  }
 
-  // useEffect(() => {
-  //   // Fetch countries from API (replace with your actual endpoint)
-  //   fetch('/api/countries')
-  //     .then(res => res.json())
-  //     .then(data => setCountries(data));
-  // }, []);
-
-  const handleCountryChange = (e) => {
-    const countryId = e.target.value;
-    setCountry(countryId);
-    // Fetch states based on selected country
-    fetch(`/get_states?country=${countryId}`)
-      .then(res => res.json())
-      .then(data => setStates(data));
-  };
-
-  // const checkNum = (e) => {
-  //   const username = e.target.value;
-  //   if (isNaN(username)) {
-  //     setErrorMessage('Only numbers allowed (e.g., 34527)');
-  //   } else {
-  //     setErrorMessage('');
-  //   }
-  // };
+  const handleCountryChange = (country) => {
+      setSelectedCountry(country)
+      setStates(State.getStatesOfCountry(country.isoCode))
+  }
 
   const schema = yup.object().shape({
-    // username: yup.string()
-    //   .when("role", {
-    //     is: "anonymous",
-    //     then: (schema) => schema.required("Username is required").min(4, "Username must be at least 4 characters"),
-    //     otherwise: (schema) => schema
-    //   }),
-  
-    // first_name: yup.string()
-    //   .when("role", {
-    //     is: "counselor",
-    //     then: (schema) => schema.required("First name is required").min(2, "First name must be at least 2 characters"),
-    //     otherwise: (schema) => schema
-    //   }),
-  
-    // last_name: yup.string()
-    //   .when("role", {
-    //     is: "counselor",
-    //     then: (schema) => schema.required("Last name is required").min(2, "Last name must be at least 2 characters"),
-    //     otherwise: (schema) => schema
-    //   }),
-  
-    // image: yup.mixed()
-    //   .when("role", {
-    //     is: "counselor",
-    //     then: (schema) => schema.required("Profile image is required"),
-    //     otherwise: (schema) => schema
-    //   }),
-      
-    //   counseling_field: yup.string()
-    //   .when("role", {
-    //     is: "counselor",
-    //     then: (schema) => schema.required("Counseling field is required"),
-    //     otherwise: (schema) => schema
-    //   }),
-
 
       // counselor specific fields
     first_name: role === "counselor" ? yup.string().required("First name is required").min(2, "First name must be at least 2 characters") : yup.string(),
@@ -119,7 +66,7 @@ const Register = () => {
   // Handle registration form submission
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/register', data);
+      const response = await axios.post('http://localhost:8000/api/register-user', data);
       signIn({
         token: response.data.token,
         expiresIn: 3600,
@@ -175,8 +122,8 @@ const Register = () => {
             type="text"
             placeholder="Anonymous Username"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            // onKeyDown={checkNum}
             {...register("username")}
+            name='username'
           />
         </div>
         {errors.username && <p className="text-red-500">{errors.username.message}</p>}
@@ -187,6 +134,7 @@ const Register = () => {
           <select
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("gender")}
+            name='gender'
           >
             <option value="">Select Your Gender</option>
             <option value="Male">Male</option>
@@ -202,6 +150,7 @@ const Register = () => {
             type="date" placeholder="dd/mm/yyyy"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("birthdate")}
+            name='dob'
           />
         </div>
         {errors.birthdate && <p className="text-red-500">{errors.birthdate.message}</p>}
@@ -211,16 +160,19 @@ const Register = () => {
           <FaFlag className="text-gray-500 mr-2" />
           <select
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            onChange={handleCountryChange}
             {...register("country")}
-          >
-            <option value="">Select Your Country</option>
-            {countries.map((country) => (
-              <option key={country.id} value={country.id}>
-                {country.name}
-              </option>
-            ))}
-          </select>
+            name='country'
+            onChange={(e) => handleCountryChange(
+              countries.find((c)=>c.isoCode === e.target.value)
+          )}
+      >
+          <option value="">Select Country</option>
+          {countries.map((country) =>(
+                  <option key={country.isoCode} value={country.isoCode}>
+                      {country.name}
+                  </option>
+              ))}
+      </select>
         </div>
         {errors.country && <p className="text-red-500">{errors.country.message}</p>}
 
@@ -229,16 +181,17 @@ const Register = () => {
           <FaFlag className="text-gray-500 mr-2" />
           <select
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            disabled={!states.length}
+            disabled={!selectedCountry}
             {...register("state")}
-          >
-            <option value="">Select Your State</option>
-            {states.map((state) => (
-              <option key={state.id} value={state.id}>
-                {state.name}
-              </option>
-            ))}
-          </select>
+            name='state'
+            >
+                <option value="">Select State</option>
+                {states.map((state) => (
+                    <option value={state.isoCode} key={state.isoCode}>
+                        {state.name}
+                    </option>
+                ))}
+            </select>
         </div>
         {errors.state && <p className="text-red-500">{errors.state.message}</p>}
 
@@ -250,6 +203,7 @@ const Register = () => {
             placeholder="Password"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("password")}
+            name='password'
           />
         </div>
         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
@@ -262,6 +216,7 @@ const Register = () => {
             placeholder="Confirm Password"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("confirmPassword")}
+            name='confirmPassword'
           />
         </div>
         {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
@@ -271,6 +226,7 @@ const Register = () => {
           <FaKey className="text-gray-500 mr-2" />
           <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("recovery_question")}
+          name='recovery_question'
           >
             <option value="">Password Recovery Question</option>
             <option value="Childhood favourite movie">Childhood favourite movie</option>
@@ -292,6 +248,7 @@ const Register = () => {
             placeholder="Answer"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("answer")}
+            name='answer'
           />
         </div>
         {errors.answer && <p className="text-red-500">{errors.answer.message}</p>}
@@ -306,6 +263,7 @@ const Register = () => {
           <FaUser className="text-gray-500 mr-2" />
           <input type="text" placeholder="Counselor Username" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("username")}
+          name='username'
           />
         </div>
         {errors.username && <p className="text-red-500">{errors.username.message}</p>}
@@ -315,6 +273,7 @@ const Register = () => {
           <FaUser className="text-gray-500 mr-2" />
           <input type="text" placeholder="First Name" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("first_name")}
+          name='first_name'
           />
         </div>
         {errors.first_name && <p className="text-red-500">{errors.first_name.message}</p>}
@@ -324,6 +283,7 @@ const Register = () => {
           <FaUser className="text-gray-500 mr-2" />
           <input type="text" placeholder="Last Name" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("last_name")}
+          name='last_name'
           />
         </div>
         {errors.last_name && <p className="text-red-500">{errors.last_name.message}</p>}
@@ -333,6 +293,7 @@ const Register = () => {
           <MdOutlineAlternateEmail className="text-gray-500 mr-2" />
           <input type="text" placeholder="Counselor Email" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("email")}
+          name='email'
           />
         </div>
         {errors.email && <p className="text-red-500">{errors.email.message}</p>}
@@ -342,6 +303,7 @@ const Register = () => {
           <FaRegImage className="text-gray-500 mr-2" />
           <input type="file" className="flex-grow h-12 p-2 w-[70%] bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("image")}
+          name='image'
           />
         </div>
         {errors.image && <p className="text-red-500">{errors.image.message}</p>}
@@ -352,6 +314,7 @@ const Register = () => {
             <GiField className="text-gray-500 mr-2" />
             <input type="text" placeholder="Counseling Field" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("counseling_field")}
+            name='counseling_field'
             />
           </div>
         )}
@@ -362,6 +325,7 @@ const Register = () => {
           <FaCalendarAlt className="text-gray-500 mr-2" />
           <input type="date" placeholder="dd/mm/yyyy" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("birthdate")}
+          name='dob'
           />
         </div>
         {errors.birthdate && <p className="text-red-500">{errors.birthdate.message}</p>}
@@ -371,6 +335,7 @@ const Register = () => {
           <FaVenusMars className="text-gray-500 mr-2" />
           <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("gender")}
+          name='gender'
           >
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
@@ -382,23 +347,37 @@ const Register = () => {
         {/* Country */}
         <div className="flex items-center mb-3">
           <FaFlag className="text-gray-500 mr-2" />
-          <select onChange={handleCountryChange} className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+          <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("country")}
-          >
-            <option value="">Select Country</option>
-            {countries.map(country => <option key={country.id} value={country.id}>{country.name}</option>)}
-          </select>
+          name='country'
+          onChange={(e) => handleCountryChange(
+            countries.find((c)=>c.isoCode === e.target.value)
+        )}
+    >
+        <option value="">Select Country</option>
+        {countries.map((country) =>(
+                <option key={country.isoCode} value={country.isoCode}>
+                    {country.name}
+                </option>
+            ))}
+    </select>
         </div>
         {errors.country && <p className="text-red-500">{errors.country.message}</p>}
 
         {/* State */}
         <div className="flex items-center mb-3">
           <FaFlag className="text-gray-500 mr-2" />
-          <select disabled={!states.length} className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+          <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("state")}
+          name='state'
+          disabled={!selectedCountry}
           >
-            <option value="">Select State</option>
-            {states.map(state => <option key={state.id} value={state.id}>{state.name}</option>)}
+              <option value="">Select State</option>
+              {states.map((state) => (
+                  <option value={state.isoCode} key={state.isoCode}>
+                      {state.name}
+                  </option>
+              ))}
           </select>
         </div>
         {errors.state && <p className="text-red-500">{errors.state.message}</p>}
@@ -408,6 +387,7 @@ const Register = () => {
           <AiFillProfile className="text-gray-500 mr-2" />
           <textarea placeholder="Anything you would like to share about yourself" className="flex-grow h-24 p-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("bio")}
+          name='bio'
           ></textarea>
         </div>
         {errors.bio && <p className="text-red-500">{errors.bio.message}</p>}
@@ -417,6 +397,7 @@ const Register = () => {
           <FaLock className="text-gray-500 mr-2" />
           <input type="password" placeholder="Password" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("password")}
+          name='password'
           />
         </div>
         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
@@ -429,6 +410,7 @@ const Register = () => {
             placeholder="Confirm Password"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("confirmPassword")}
+            name='confirmPassword'
           />
         </div>
         {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
@@ -438,6 +420,7 @@ const Register = () => {
           <FaKey className="text-gray-500 mr-2" />
           <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
           {...register("recovery_question")}
+          name='recovery_question'
           >
             <option value="">Recovery Question</option>
             <option value="Favorite childhood movie">Favorite childhood movie</option>
@@ -452,6 +435,7 @@ const Register = () => {
           <FaKey className="text-gray-500 mr-2" />
           <input type="text" placeholder="Answer" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("recovery_answer")}
+          name='recovery_answer'
           />
         </div>
         {errors.answer && <p className="text-red-500">{errors.answer.message}</p>}
