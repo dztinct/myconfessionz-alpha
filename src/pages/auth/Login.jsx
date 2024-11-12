@@ -27,7 +27,7 @@ const Login = () => {
   // Handle login form submission
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/login', data);
+      const response = await axios.post('http://localhost:8000/api/login-user', data);
       signIn({
         token: response.data.token,
         expiresIn: 3600,

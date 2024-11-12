@@ -9,7 +9,11 @@ import { AiFillProfile } from "react-icons/ai"
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import axios from 'axios';
 import { Country, State } from 'country-state-city'
+import { parse, isValid, format } from 'date-fns';
+import useSignIn from 'react-auth-kit/hooks/useSignIn';
+import { useNavigate } from 'react-router-dom'
 
 const Register = () => {
   const [countries, setCountries] = useState(Country.getAllCountries())
@@ -41,10 +45,31 @@ const Register = () => {
 
     // mixed fields
     username: yup.string().required("Username is required").min(4, "Username must be at least 4 characters"),
-    birthdate: yup.date().required("Date of birth is required").max(new Date(), "Date of birth cannot be in the future"),
+    // dob: yup.date().required("Date of birth is required").max(new Date(), "Date of birth cannot be in the future"),
+
+    dob: yup
+    .date()
+    .transform((value, originalValue) => {
+      return originalValue === "" ? null : value; // Convert empty string to null
+    })
+    .required("Date of birth is required")
+    .max(new Date(), "Date of birth cannot be in the future"),
+
+    // dob: yup
+    // .string()
+    // .required("Date of birth is required")
+    // .test("is-valid-date", "Date of birth cannot be in the future", (value) => {
+    //   if (!value) return false;
+    //   // const parsedDate = format(value, 'dd/MM/yyyy')
+    //   // const parsedDate = format(value, 'yyyy/MM/dd')
+    //   const parsedDate = parse(value, "yyyy-MM-dd", new Date()); // Match input format
+    //   return isValid(parsedDate) && parsedDate <= new Date();
+    // }),
+  
+
     gender: yup.string().required("Gender is required"),
     password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
-    confirmPassword: yup.string()
+    password_confirmation: yup.string()
       .oneOf([yup.ref('password'), null], "Passwords must match")
       .required("Please confirm your password"),
     country: yup.string().required("Country is required"),
@@ -63,23 +88,27 @@ const Register = () => {
     resolver: yupResolver(schema),
   });
 
+  // log user in and redirect to homepage
+  const signIn = useSignIn();
+  const navigate = useNavigate()
+
   // Handle registration form submission
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/register-user', data);
+      const response = await axios.post('http://127.0.0.1:8000/api/register-user', data);
+      // withCredentials: false
       signIn({
         token: response.data.token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: data.email || data.username },
+        authState: { username: data.username },
     });
     console.log(data)
+    setTimeout(() => navigate('/login'), 200); // Adding a slight delay
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Error registering user:", error);
     }
   };
-
-
 
   return (
     <div className="flex flex-col items-center justify-center w-screen bg-black text-bRed pt-16  pb-24 px-2">
@@ -137,8 +166,8 @@ const Register = () => {
             name='gender'
           >
             <option value="">Select Your Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
           </select>
         </div>
         {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
@@ -149,11 +178,11 @@ const Register = () => {
           <input
             type="date" placeholder="dd/mm/yyyy"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("birthdate")}
+            {...register("dob")}
             name='dob'
           />
         </div>
-        {errors.birthdate && <p className="text-red-500">{errors.birthdate.message}</p>}
+        {errors.dob && <p className="text-red-500">{errors.dob.message}</p>}
 
         {/* Country */}
         <div className="flex items-center mb-3">
@@ -215,11 +244,11 @@ const Register = () => {
             type="password"
             placeholder="Confirm Password"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("confirmPassword")}
-            name='confirmPassword'
+            {...register("password_confirmation")}
+            name='password_confirmation'
           />
         </div>
-        {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
+        {errors.password_confirmation && <p className="text-red-500">{errors.password_confirmation.message}</p>}
 
         {/* Recovery Question */}
         <div className="flex items-center mb-3">
@@ -324,11 +353,11 @@ const Register = () => {
         <div className="flex items-center mb-3">
           <FaCalendarAlt className="text-gray-500 mr-2" />
           <input type="date" placeholder="dd/mm/yyyy" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
-          {...register("birthdate")}
+          {...register("dob")}
           name='dob'
           />
         </div>
-        {errors.birthdate && <p className="text-red-500">{errors.birthdate.message}</p>}
+        {errors.dob && <p className="text-red-500">{errors.dob.message}</p>}
 
         {/* Gender */}
         <div className="flex items-center mb-3">
@@ -338,8 +367,8 @@ const Register = () => {
           name='gender'
           >
             <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
           </select>
         </div>
         {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
@@ -409,11 +438,11 @@ const Register = () => {
             type="password"
             placeholder="Confirm Password"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("confirmPassword")}
-            name='confirmPassword'
+            {...register("password_confirmation")}
+            name='password_confirmation'
           />
         </div>
-        {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
+        {errors.password_confirmation && <p className="text-red-500">{errors.password_confirmation.message}</p>}
 
         {/* Recovery Question */}
         <div className="flex items-center mb-3">
