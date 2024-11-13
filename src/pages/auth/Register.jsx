@@ -47,24 +47,24 @@ const Register = () => {
     username: yup.string().required("Username is required").min(4, "Username must be at least 4 characters"),
     // dob: yup.date().required("Date of birth is required").max(new Date(), "Date of birth cannot be in the future"),
 
-    dob: yup
-    .date()
-    .transform((value, originalValue) => {
-      return originalValue === "" ? null : value; // Convert empty string to null
-    })
-    .required("Date of birth is required")
-    .max(new Date(), "Date of birth cannot be in the future"),
-
     // dob: yup
-    // .string()
+    // .date()
+    // .transform((value, originalValue) => {
+    //   return originalValue === "" ? null : value; // Convert empty string to null
+    // })
     // .required("Date of birth is required")
-    // .test("is-valid-date", "Date of birth cannot be in the future", (value) => {
-    //   if (!value) return false;
-    //   // const parsedDate = format(value, 'dd/MM/yyyy')
-    //   // const parsedDate = format(value, 'yyyy/MM/dd')
-    //   const parsedDate = parse(value, "yyyy-MM-dd", new Date()); // Match input format
-    //   return isValid(parsedDate) && parsedDate <= new Date();
-    // }),
+    // .max(new Date(), "Date of birth cannot be in the future"),
+
+    dob: yup
+    .string()
+    .required("Date of birth is required")
+    .test("is-valid-date", "Date of birth cannot be in the future", (value) => {
+      if (!value) return false;
+      // const parsedDate = format(value, 'dd/MM/yyyy')
+      // const parsedDate = format(value, 'yyyy/MM/dd')
+      const parsedDate = parse(value, "dd-MM-yyyy", new Date()); // Match input format
+      return isValid(parsedDate) && parsedDate <= new Date();
+    }),
   
 
     gender: yup.string().required("Gender is required"),
@@ -101,10 +101,13 @@ const Register = () => {
         token: response.data.token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { username: data.username },
+        authState: { data },
+        auth: {
+          type: "http"
+        }
     });
     console.log(data)
-    setTimeout(() => navigate('/login'), 200); // Adding a slight delay
+    setTimeout(() => navigate('/home'), 200); // Adding a slight delay
     } catch (error) {
       console.error("Error registering user:", error);
     }
@@ -176,7 +179,7 @@ const Register = () => {
         <div className="flex items-center mb-3">
           <FaCalendarAlt className="text-gray-500 mr-2" />
           <input
-            type="date" placeholder="dd/mm/yyyy"
+            type="date" placeholder="dd-mm-yyyy"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("dob")}
             name='dob'
@@ -352,7 +355,7 @@ const Register = () => {
         {/* Date of Birth */}
         <div className="flex items-center mb-3">
           <FaCalendarAlt className="text-gray-500 mr-2" />
-          <input type="date" placeholder="dd/mm/yyyy" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
+          <input type="date" placeholder="dd-mm-yyyy" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("dob")}
           name='dob'
           />

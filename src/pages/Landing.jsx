@@ -53,10 +53,10 @@ const Home = () => {
         </div>
 
             <div className="flex gap-4 justify-center mt-5 mx-8">
-  <Link to="/register" className="w-full md:w-auto px-6 py-2 bg-white text-black font-semibold rounded-md hover:bg-black hover:text-white hover:border-2 transition-colors">
+  <Link to="/register" className="w-full md:w-auto px-6 py-2 bg-white text-black font-semibold rounded-md hover:bg-black hover:text-white hover:border-2 transition-colors mr-2">
     Get Started
   </Link>
-  <Link to="/login" className="w-full md:w-auto px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-white hover:text-black transition-colors border-2 border-dotted border-gray-500">
+  <Link to="/login" className="w-full md:w-auto px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-white hover:text-black transition-colors border-2 border-dotted border-gray-500 ml-2">
     Login
   </Link>
 </div>

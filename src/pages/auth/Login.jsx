@@ -6,12 +6,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { MdVerifiedUser } from 'react-icons/md';
-import useSignIn from 'react-auth-kit/hooks/useSignIn';
 import logo from '../../images/myconfessionz.png'
+import useSignIn from 'react-auth-kit/hooks/useSignIn';
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const [role, setRole] = useState("anonymous");
-  const signIn = useSignIn();
 
   // Define validation schema based on role
   const schema = yup.object().shape({
@@ -24,6 +24,10 @@ const Login = () => {
     resolver: yupResolver(schema),
   });
 
+    // log user in and redirect to homepage
+    const signIn = useSignIn();
+    const navigate = useNavigate()
+
   // Handle login form submission
   const onSubmit = async (data) => {
     try {
@@ -32,8 +36,13 @@ const Login = () => {
         token: response.data.token,
         expiresIn: 3600,
         tokenType: "Bearer",
-        authState: { email: data.email || data.username },
+        authState: { data },
+        auth: {
+          type: "http"
+        }
       });
+      console.log(data)
+      setTimeout(() => navigate('/home'), 200); // Adding a slight delay
     } catch (error) {
       console.error("Error logging in:", error);
     }

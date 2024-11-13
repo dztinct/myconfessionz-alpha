@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated';
 import useSignOut from 'react-auth-kit/hooks/useSignOut';
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import cookies from 'js-cookie'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,14 +24,51 @@ const Navbar = () => {
   const signOut = useSignOut()
   const navigate = useNavigate()
 
-  const logOut = () => {
-    signOut();
-    setTimeout(() => navigate('/login'), 200); // Adding a slight delay
+  const logOut = async () => {
+    
+    try {
+        // Send request to backend to log out the user
+        await axios.post('http://localhost:8000/api/logout-user', {}, { withCredentials: true });
+  
+        // Clear the auth cookie (adjust the name if necessary)
+        cookies.remove('auth_token'); // Only if token is set in a cookie
+  
+        // Sign out on the frontend
+        signOut();
+  
+        // Optionally navigate to the login page or home
+        // window.location.href = '/';
+        setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
   };  
+
+
+    // Handle registration form submission
+    const onSubmit = async (data) => {
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/api/register-user', data);
+        // withCredentials: false
+        signIn({
+          token: response.data.token,
+          expiresIn: 3600,
+          tokenType: "Bearer",
+          authState: { username: data.username },
+          auth: {
+            type: "http"
+          }
+      });
+      console.log(data)
+      setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
+    };
 
   return (
     <div>
-      {!isAuthenticated ? (<>
+      {isAuthenticated ? (<>
           <nav className="fixed top-0 left-0 w-full bRed bg-bRed text-white px-4 py-5 z-10">
       <div className="container mx-auto flex justify-between items-center">
         {/* Brand Logo */}

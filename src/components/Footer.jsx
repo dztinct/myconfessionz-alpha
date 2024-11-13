@@ -8,7 +8,7 @@ const Footer = () => {
 
   return (
     <div>
-      {isAuthenticated ? (
+      {!isAuthenticated ? (
           <>
     <nav className="fixed bottom-0 w-full bg-bRed text-white py-2 px-2">
       <div className="container mx-auto flex justify-between items-center">
