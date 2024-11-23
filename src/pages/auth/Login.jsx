@@ -7,19 +7,10 @@ import * as yup from 'yup';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { MdVerifiedUser } from 'react-icons/md';
 import logo from '../../images/myconfessionz.png'
-import useSignIn from 'react-auth-kit/hooks/useSignIn';
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
-import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated';
-import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
 import { useNavigate } from 'react-router-dom'
-import { AuthError } from 'react-auth-kit/errors';
 
 const Login = () => {
   const [role, setRole] = useState("anonymous");
-
-  const auth = useAuthUser(); // Hook to retrieve the auth state
-  const isAuthenticated = useIsAuthenticated(); 
-  const header = useAuthHeader(); 
 
   // Define validation schema based on role
   const schema = yup.object().shape({
@@ -33,7 +24,6 @@ const Login = () => {
   });
 
     // log user in and redirect to homepage
-    const signIn = useSignIn();
     const navigate = useNavigate()
 
       // Configure axios instance
@@ -55,19 +45,11 @@ const Login = () => {
       // const response = await api.post('/api/user/auth/login', data);
       
       if (response.data.token) {
-        const authSuccess = signIn({
-          auth: {
-            token: response.data.token,
-            type: 'Bearer',
-          },
-          userState: {
-            username: data.username,
-            // add any other user data from response.data that you need
-          },
-          // Adjust expiry as needed
-          expiresIn: 60 * 24 * 30 // 30 days
-        });
+        const authSuccess = null
 
+
+
+        
         if (authSuccess) {
           navigate('/home');
           console.log(response.data.token)
