@@ -9,14 +9,15 @@ import Error from "./pages/Errors/Error"
 import Home from "./pages/Home"
 import AuthProvider from 'react-auth-kit';
 import createStore from 'react-auth-kit/createStore'; 
+import RequireAuth from '@auth-kit/react-router/RequireAuth'
+
 
 const App = () => {
-  
   const store = createStore({
     authName:'_auth',
     authType:'cookie',
     cookieDomain: window.location.hostname,
-    cookieSecure: window.location.protocol === 'http'
+    cookieSecure: window.location.protocol === 'https:',
    })
 
   return (
@@ -26,8 +27,8 @@ const App = () => {
             <Navbar />
             <Routes>
               <Route path="/" element={<Landing/>}/>
-              {/* <Route path="/home" element={ <RequireAuth loginPath="/login"><Home/></RequireAuth> }/> */}
-              <Route path="/home" element={ <Home/>}/>
+              <Route path="/home" element={ <RequireAuth fallbackPath="/login"><Home/></RequireAuth> }/>
+              {/* <Route path="/home" element={ <Home/>}/> */}
               <Route path="/explore" element={<Explore/>}/>
               <Route path="/login" element={<Login/>}/>
               <Route path="/register" element={<Register/>}/>

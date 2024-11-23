@@ -1,9 +1,13 @@
-import React from 'react';
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
+import React from 'react'
 
 const HomePosts = () => {
+  // const auth = useAuthUser();
+  // console.log(auth.user)
   return (
     <div className='my-16'>
       <section className="flex flex-row flex-wrap mx-auto">
+      {/* {auth.user} */}
         {/* Card Component */}
         <div className="transition-all duration-150 flex w-full px-4 py-1 md:w-[80%] sm:w-[80%] mx-auto">
           <div className="flex flex-col items-stretch min-h-full pb-4 mb-6 transition-all duration-150 bg-white rounded-lg shadow-lg hover:shadow-2xl">
