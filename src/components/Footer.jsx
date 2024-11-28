@@ -1,14 +1,12 @@
-import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated';
-
 import LoggedOutFooter from './footer/LoggedOutFooter';
 import LoggedInFooter from './footer/LoggedInFooter';
+import { useAuthStore } from '../store/authStore';
 
 const Footer = () => {
-    const isAuthenticated = useIsAuthenticated();
-
+  const { isAuthenticated } = useAuthStore()
   return (
     <div>
-      {isAuthenticated ? <LoggedInFooter/> : <LoggedOutFooter/>}
+      { isAuthenticated ? <LoggedInFooter/> : <LoggedOutFooter/> }
     </div>
   );
 };

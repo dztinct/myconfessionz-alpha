@@ -1,16 +1,14 @@
-import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
+import { useAuthStore } from '../store/authStore';
 import LoggedInNav from './navbar/LoggedInNav'
 import LoggedOutNav from './navbar/LoggedOutNav'
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 
   const Navbar = () => {
-
-  // Check if user is authenticated
-  const isAuthenticated = useIsAuthenticated()
+    const { isAuthenticated } = useAuthStore()
 
   return (
     <div>
       {isAuthenticated ? <LoggedInNav/> : <LoggedOutNav/>}
+
     </div>
   );
 };

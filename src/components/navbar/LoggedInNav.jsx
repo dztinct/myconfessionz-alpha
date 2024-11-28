@@ -4,9 +4,9 @@ import { FiMenu, FiX } from 'react-icons/fi'; // Hamburger and Close Icons
 import logo from '../../images/myconfessionz.png';
 import { Link } from 'react-router-dom';
 import cookies from 'js-cookie'
-import useSignOut from 'react-auth-kit/hooks/useSignOut';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuthStore } from '../../store/authStore';
 
 const LoggedInNav = () => {
 
@@ -18,28 +18,30 @@ const LoggedInNav = () => {
     };
   
     // log user out and redirect to login page
-    const signOut = useSignOut()
     const navigate = useNavigate()
+    const { logoutUser } = useAuthStore()
   
     const logOut = async () => {
       
       try {
-        // Send request to backend to log out the user
-        // await axios.post('http://localhost:5000/api/user/auth/logout', {}, { withCredentials: true });
-        await axios.post('http://localhost:8000/api/user/logout-user', {}, { withCredentials: true });
+        const loggedOut = logoutUser()
+        if (loggedOut) {
+          navigate('/login');
+        }
+        // // Send request to backend to log out the user
+        // // await axios.post('http://localhost:5000/api/user/auth/logout', {}, { withCredentials: true });
+        // await axios.post('http://localhost:8000/api/user/logout-user', {}, { withCredentials: true });
        
-        // Clear cookies
-        cookies.remove('_auth', { path: '/' });
-        cookies.remove('_auth_state'); // Remove auth state
-        cookies.remove('_auth_type');  // Remove auth type
-        cookies.remove('jwt');         // Remove custom JWT
+        // // Clear cookies
+        // cookies.remove('_auth', { path: '/' });
+        // cookies.remove('_auth_state'); // Remove auth state
+        // cookies.remove('_auth_type');  // Remove auth type
+        // cookies.remove('jwt');         // Remove custom JWT
 
-          // Sign out on the frontend
-        signOut();
-    
-        // Optionally navigate to the login page or home
-        // setTimeout(() => navigate('/login'), 200); // Adding a slight delay
-        setTimeout(() => window.location.href = '/login', 200); // Adding a slight delay
+        //   // Sign out on the frontend
+        // // Optionally navigate to the login page or home
+        // // setTimeout(() => navigate('/login'), 200); // Adding a slight delay
+        // setTimeout(() => window.location.href = '/login', 200); // Adding a slight delay
     } catch (error) {
       console.error("Error logging out:", error);
     }

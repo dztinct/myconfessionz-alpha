@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import logo from '../../images/myconfessionz.png';
-import { FaUser, FaLock, FaCalendarAlt, FaVenusMars, FaFlag, FaKey } from 'react-icons/fa';
+import { FaUser, FaLock, FaCalendarAlt, FaVenusMars, FaFlag, FaKey, FaTheaterMasks } from 'react-icons/fa';
 import { MdVerifiedUser, MdOutlineAlternateEmail } from "react-icons/md"
 import { Link } from 'react-router-dom'
 import { GiField } from "react-icons/gi"
@@ -9,11 +9,12 @@ import { AiFillProfile } from "react-icons/ai"
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import axios from 'axios';
 import { Country, State } from 'country-state-city'
 import { parse, isValid, format } from 'date-fns';
-import useSignIn from 'react-auth-kit/hooks/useSignIn';
 import { useNavigate } from 'react-router-dom'
+import { Loader } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore'
+import toast from 'react-hot-toast';
 
 const Register = () => {
   const [countries, setCountries] = useState(Country.getAllCountries())
@@ -55,19 +56,28 @@ const Register = () => {
     // .required("Date of birth is required")
     // .max(new Date(), "Date of birth cannot be in the future"),
 
+    // dob: yup
+    // .string()
+    // .required("Date of birth is required")
+    // .test("is-valid-date", "Date of birth cannot be in the future", (value) => {
+    //   if (!value) return false;
+    //   // const parsedDate = format(value, 'dd/MM/yyyy')
+    //   // const parsedDate = format(value, 'yyyy/MM/dd')
+    //   const parsedDate = parse(value, "dd-MM-yyyy", new Date()); // Match input format
+    //   return isValid(parsedDate) && parsedDate <= new Date();
+    // }),
+  
+    //new from chatGPT (Sunday)
     dob: yup
     .string()
     .required("Date of birth is required")
-    .test("is-valid-date", "Date of birth cannot be in the future", (value) => {
-      if (!value) return false;
-      // const parsedDate = format(value, 'dd/MM/yyyy')
-      // const parsedDate = format(value, 'yyyy/MM/dd')
-      const parsedDate = parse(value, "dd-MM-yyyy", new Date()); // Match input format
-      return isValid(parsedDate) && parsedDate <= new Date();
-    }),
-  
+    .test("valid-date", "Invalid date format", (value) =>
+        isValid(parse(value, "yyyy-MM-dd", new Date()))
+    ),
+
 
     gender: yup.string().required("Gender is required"),
+    role: yup.string().required("Select role"),
     password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
     password_confirmation: yup.string()
       .oneOf([yup.ref('password'), null], "Passwords must match")
@@ -89,28 +99,35 @@ const Register = () => {
   });
 
   // log user in and redirect to homepage
-  const signIn = useSignIn();
+
   const navigate = useNavigate()
 
+  const { signupUser, error, isLoading, signupCounselor, errorCounselor, isLoadingCounselor } = useAuthStore()
   // Handle registration form submission
-  const onSubmit = async (data) => {
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/api/register-user', data);
-      // withCredentials: false
-      signIn({
-        token: response.data.token,
-        expiresIn: 3600,
-        tokenType: "Bearer",
-        authState: { data },
-        auth: {
-          type: "http"
-        }
-    });
-    console.log(data)
-    setTimeout(() => navigate('/home'), 200); // Adding a slight delay
-    } catch (error) {
-      console.error("Error registering user:", error);
+  const onSubmit = async (data, event) => {
+    event.preventDefault
+    if(data.role === "anonymous") {
+      try {
+        await signupUser(data.role, data.username, data.password, data.password_confirmation, data.state, data.country, data.recovery_question, data.answer, data.gender, data.dob)
+  
+      console.log(data)
+      toast.success("Registration Successful");
+      setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
+    }else{
+      try {
+        await signupCounselor(data.role, data.username, data.password, data.password_confirmation, data.state, data.country, data.recovery_question, data.answer, data.gender, data.dob, data.bio, data.email, data.counseling_field, data.image, data.first_name, data.last_name)
+  
+      console.log(data)
+      toast.success("Registration Successful");
+      setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
     }
+
   };
 
   return (
@@ -139,6 +156,7 @@ const Register = () => {
           <MdVerifiedUser className="text-gray-500 mr-2" />
           <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" id="role"
         value={role}
+        {...register("role")}
         onChange={handleRoleChange}>
             <option value="anonymous">Anonymous User</option>
             <option value="counselor">Counselor</option>
@@ -149,16 +167,17 @@ const Register = () => {
                 <>
         {/* Username */}
         <div className="flex items-center mb-3">
-          <FaUser className="text-gray-500 mr-2" />
+          <FaTheaterMasks className="text-gray-500 mr-2" />
           <input
             type="text"
             placeholder="Anonymous Username"
             className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             {...register("username")}
-            name='username'
+            // name='username'
           />
         </div>
         {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+        {error && <p className="text-red-500 font-semibold">{error}</p>}
 
         {/* Gender */}
         <div className="flex items-center mb-3">
@@ -476,8 +495,8 @@ const Register = () => {
             )}
 
         {/* Register Button */}
-        <button type="submit" className="h-12 px-6 w-full bg-bRed mt-8 rounded font-semibold text-white hover:bg-red-700">
-          Register
+        <button type="submit" className="h-12 px-6 w-full bg-bRed mt-8 rounded font-semibold text-white hover:bg-red-700" disabled={isLoading}>
+          {isLoading ? <Loader className='animate-spin mx-auto size={24}'/> : "Register"}
         </button>
 
         <div className="flex mt-6 justify-center text-xs">

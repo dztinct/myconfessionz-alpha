@@ -8,6 +8,8 @@ import { FaUser, FaLock } from 'react-icons/fa';
 import { MdVerifiedUser } from 'react-icons/md';
 import logo from '../../images/myconfessionz.png'
 import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/authStore';
+import { Loader } from 'lucide-react';
 
 const Login = () => {
   const [role, setRole] = useState("anonymous");
@@ -27,38 +29,45 @@ const Login = () => {
     const navigate = useNavigate()
 
       // Configure axios instance
-    const api = axios.create({
-      baseURL: 'http://localhost:8000',
-      // baseURL: 'http://localhost:5000',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      }
-    });
+    // const api = axios.create({
+    //   baseURL: 'http://localhost:8000',
+    //   // baseURL: 'http://localhost:5000',
+    //   withCredentials: true,
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Accept': 'application/json',
+    //   }
+    // });
+
+    const { loginUser, isLoading, error } = useAuthStore()
 
   // Handle login form submission
   const onSubmit = async (data, event) => {
     event.preventDefault();
     try {
-      const response = await api.post('/api/login-user', data);
-      // const response = await api.post('/api/user/auth/login', data);
+      const loggedIn = await loginUser(data.username, data.password)
+      // console.log(data)
+
+
+
+      // // const response = await api.post('/api/user/auth/login', data);
       
-      if (response.data.token) {
-        const authSuccess = null
-
-
+      // if (response.data.token) {
+      //   const authSuccess = null
 
         
-        if (authSuccess) {
+
+
+        if (loggedIn) {
           navigate('/home');
-          console.log(response.data.token)
-        } else {
-          console.log("Failed to set authentication state");
+          console.log(loggedIn)
         }
-      } else {
-        console.log("No token received from server");
-      }
+      //   } else {
+      //     console.log("Failed to set authentication state");
+      //   }
+      // } else {
+      //   console.log("No token received from server");
+      // }
     } catch (error) {
       console.error("Login error:", error);
       console.log(error || "Failed to login. Please try again.");
@@ -92,7 +101,7 @@ const Login = () => {
         {role === "anonymous" ? (
           <>
             <div className="flex items-center mb-3">
-              <FaUser className="text-gray-500 mr-2" />
+              <FaTheaterMasks className="text-gray-500 mr-2" />
               <input
                 type="text"
                 placeholder="Anonymous Username"
@@ -132,9 +141,11 @@ const Login = () => {
           />
         </div>
         {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+        {error && <p className="text-red-500 text-sm font-semibold">{error}</p>}
 
-        <button type="submit" className="h-12 px-6 bg-bRed mt-4 rounded font-semibold text-sm text-red-100 hover:bg-red-700">
-          Log in
+        <button type="submit" className="h-12 px-6 bg-bRed mt-4 rounded font-semibold text-sm text-red-100 hover:bg-red-700"
+          disabled={isLoading}>
+        {isLoading ? <Loader className='animate-spin mx-auto size={24}'/> : "Log in"}
         </button>
 
         <div className="flex mt-4 justify-center text-xs">
@@ -142,6 +153,7 @@ const Login = () => {
                 <span className="mx-2 text-gray-300">/</span>
                 <Link to="/register" className="text-bRed hover:text-red-700">Register</Link>
             </div>
+
       </form>
     </div>
   );
