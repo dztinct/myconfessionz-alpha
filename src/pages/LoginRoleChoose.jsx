@@ -3,7 +3,7 @@ import logo from '../images/myconfessionz.png'
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom'
 
-const Home = () => {
+const LoginRoleChoose = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const slides = [
         { text: `"I've had 5 abortions for my husband's dad!, my husband is not aware, now I'm carrying another baby and it's still not my husband's"`, author: "anonymous32210" },
@@ -53,16 +53,16 @@ const Home = () => {
         </div>
 
             <div className="flex gap-4 justify-center mt-5 mx-8">
-  <Link to="/anonymous-register" className="w-full md:w-auto px-6 py-2 bg-white text-black font-semibold rounded-md hover:bg-black hover:text-white hover:border-2 transition-colors mr-2">
-    Anonymous Sign Up
+  <Link to="/anonymous-login" className="w-full md:w-auto px-6 py-2 bg-white text-black font-semibold rounded-md hover:bg-black hover:text-white hover:border-2 transition-colors mr-2">
+    Anonymous Login
   </Link>
-  <Link to="/counselor-register" className="w-full md:w-auto px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-white hover:text-black transition-colors border-2 border-dotted border-gray-500 ml-2">
-    Counselor Sign Up
+  <Link to="/counselor-login" className="w-full md:w-auto px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-white hover:text-black transition-colors border-2 border-dotted border-gray-500 ml-2">
+    Counselor Login
   </Link>
-</div>
+</div>  
    
     </div>
   )
 }
 
-export default Home
+export default LoginRoleChoose

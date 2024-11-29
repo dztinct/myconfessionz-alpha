@@ -33,8 +33,7 @@ export const useAuthStore = create((set) => ({
   },
 
   // Signup
-      signupUser: async (role, username, password, password_confirmation, state, country, recovery_question, answer, gender, dob) => {
-  // signup: async (credentials) => {
+      signup: async (username, password, password_confirmation, state, country, recovery_question, answer, gender, dob) => {
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(`${API_URL}/register-user`, {role, username, password, password_confirmation, state, country, recovery_question, answer, gender, dob});
@@ -51,7 +50,7 @@ export const useAuthStore = create((set) => ({
   },
 
   // Login
-  loginUser: async ( username, password ) => {
+  login: async ( username, password ) => {
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(`${API_URL}/login-user`, {

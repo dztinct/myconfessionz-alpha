@@ -1,72 +1,64 @@
-import { useState, useEffect } from 'react';
-import logo from '../../images/myconfessionz.png';
-import { FaUser, FaLock, FaCalendarAlt, FaVenusMars, FaFlag, FaKey, FaTheaterMasks } from 'react-icons/fa';
-import { MdVerifiedUser, MdOutlineAlternateEmail } from "react-icons/md"
+// External Libraries
+import { useState } from 'react';
 import { Link } from 'react-router-dom'
-import { GiField } from "react-icons/gi"
-import { FaRegImage } from "react-icons/fa6"
-import { AiFillProfile } from "react-icons/ai"
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { Country, State } from 'country-state-city'
+import * as yup from 'yup';
 import { parse, isValid, format } from 'date-fns';
-import { useNavigate } from 'react-router-dom'
-import { Loader } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore'
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom'
 
-const Register = () => {
+// icons
+import { FaUser, FaLock, FaCalendarAlt, FaVenusMars, FaFlag, FaKey } from 'react-icons/fa';
+import { FaRegImage } from "react-icons/fa6"
+import { GiField } from "react-icons/gi"
+import { AiFillProfile } from "react-icons/ai"
+import { MdOutlineAlternateEmail } from "react-icons/md"
+import { Loader } from 'lucide-react';
+
+// local files
+import logo from '../../images/myconfessionz.png';
+import { useAuthStoreCounselor } from '../../store/authStoreCounselor';
+
+const CounselorRegister = () => {
+  const [imageData, setImageData] = useState(null);
+
   const [countries, setCountries] = useState(Country.getAllCountries())
   const [states, setStates] = useState([])
 
   const [selectedCountry, setSelectedCountry] = useState(null)
-
-  const [role, setRole] = useState("anonymous");
-
-  const handleRoleChange = (e) => {
-    setRole(e.target.value);
-  }
 
   const handleCountryChange = (country) => {
       setSelectedCountry(country)
       setStates(State.getStatesOfCountry(country.isoCode))
   }
 
+
+  const handleFileChange = (e) => {
+    setImageData(e.target.files[0])
+  };
+
   const schema = yup.object().shape({
 
       // counselor specific fields
-    first_name: role === "counselor" ? yup.string().required("First name is required").min(2, "First name must be at least 2 characters") : yup.string(),
-    last_name: role === "counselor" ? yup.string().required("Last name is required").min(2, "Last name must be at least 2 characters") : yup.string(),
-    email: role === "counselor" ? yup.string().email("Invalid email").required("Email is required") : yup.string(),
-    image: role === "counselor" ? yup.string().required("Image is required") : yup.string(),
-    counseling_field: role === "counselor" ? yup.string().required("Counseling field is required") : yup.string(),
-    bio: role === "counselor" ? yup.string().required("Bio is required").min(10, "Bio must be at least 10 characters") : yup.string(),
-    
-
-    // mixed fields
+    first_name: yup.string().required("First name is required").min(2, "First name must be at least 2 characters"),
+    last_name: yup.string().required("Last name is required").min(2, "Last name must be at least 2 characters"),
+    email: yup.string().email("Invalid email").required("Email is required"),
+    counseling_field: yup.string().required("Counseling field is required"),
+    bio: yup.string().required("Bio is required").min(10, "Bio must be at least 10 characters"),
     username: yup.string().required("Username is required").min(4, "Username must be at least 4 characters"),
-    // dob: yup.date().required("Date of birth is required").max(new Date(), "Date of birth cannot be in the future"),
+    // image: yup.string().required("Image is required"),
+    image: yup.mixed()
+      .required("Image is required")
+      // .test("fileType", "Unsupported image format", (value) => {
+      //   return value && ["file/jpeg", "file/png", "file/jpg"].includes(value?.type);})
+      // .test("fileSize", "File size is too large", (value) => {
+      //   return value && value.size <= 2 * 1024 * 1024})
+      .test("fileRequired", "Image is required", (value) => {
+    return value !== undefined;}),
 
-    // dob: yup
-    // .date()
-    // .transform((value, originalValue) => {
-    //   return originalValue === "" ? null : value; // Convert empty string to null
-    // })
-    // .required("Date of birth is required")
-    // .max(new Date(), "Date of birth cannot be in the future"),
 
-    // dob: yup
-    // .string()
-    // .required("Date of birth is required")
-    // .test("is-valid-date", "Date of birth cannot be in the future", (value) => {
-    //   if (!value) return false;
-    //   // const parsedDate = format(value, 'dd/MM/yyyy')
-    //   // const parsedDate = format(value, 'yyyy/MM/dd')
-    //   const parsedDate = parse(value, "dd-MM-yyyy", new Date()); // Match input format
-    //   return isValid(parsedDate) && parsedDate <= new Date();
-    // }),
-  
     //new from chatGPT (Sunday)
     dob: yup
     .string()
@@ -75,10 +67,16 @@ const Register = () => {
         isValid(parse(value, "yyyy-MM-dd", new Date()))
     ),
 
-
     gender: yup.string().required("Gender is required"),
-    role: yup.string().required("Select role"),
-    password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
+    // password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
+    password: yup
+  .string()
+  .required("Password is required")
+  .min(6, "Password must be at least 6 characters")
+  .matches(/[A-Z]/, "Password must contain an uppercase letter")
+  .matches(/[a-z]/, "Password must contain a lowercase letter")
+  .matches(/\d/, "Password must contain a number"),
+
     password_confirmation: yup.string()
       .oneOf([yup.ref('password'), null], "Passwords must match")
       .required("Please confirm your password"),
@@ -102,16 +100,28 @@ const Register = () => {
 
   const navigate = useNavigate()
 
-  const { signup, error, isLoading } = useAuthStore()
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
+
+  const { signup, error, isLoading } = useAuthStoreCounselor()
   // Handle registration form submission
   const onSubmit = async (data, event) => {
-    event.preventDefault
+    event.preventDefault()
     try {
-      await signup(data.role, data.username, data.password, data.password_confirmation, data.state, data.country, data.recovery_question, data.answer, data.gender, data.dob)
+      const formData = new FormData();
+      const realImageData = formData.append("image", imageData); // Append the image
 
-    console.log(data)
-    toast.success("Registration Successful");
-    setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+console.log(imageData.name, formData)
+      await signup(data.username, data.password, data.password_confirmation, data.state, data.country, data.recovery_question, data.answer, data.gender, data.dob, data.bio, data.email, data.counseling_field, imageData.name, data.first_name, data.last_name)
+
+      // console.log(data.image[0].name)
+      toast.success("Registration Successful");
+      setTimeout(() => navigate('/home'), 200); // Adding a slight delay
     } catch (error) {
       console.error("Error registering user:", error);
     }
@@ -138,163 +148,7 @@ const Register = () => {
         </p>
 
         {/* Role */}
-        <label htmlFor="role" className='font-semibold text-xs my-3'>Register as</label>
-        <div className="flex items-center mb-3">
-          <MdVerifiedUser className="text-gray-500 mr-2" />
-          <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" id="role"
-        value={role}
-        {...register("role")}
-        onChange={handleRoleChange}>
-            <option value="anonymous">Anonymous User</option>
-            <option value="counselor">Counselor</option>
-          </select>
-        </div>
-
-        {role === "anonymous" ? (
-                <>
-        {/* Username */}
-        <div className="flex items-center mb-3">
-          <FaTheaterMasks className="text-gray-500 mr-2" />
-          <input
-            type="text"
-            placeholder="Anonymous Username"
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("username")}
-            // name='username'
-          />
-        </div>
-        {errors.username && <p className="text-red-500">{errors.username.message}</p>}
-        {error && <p className="text-red-500 font-semibold">{error}</p>}
-
-        {/* Gender */}
-        <div className="flex items-center mb-3">
-          <FaVenusMars className="text-gray-500 mr-2" />
-          <select
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("gender")}
-            name='gender'
-          >
-            <option value="">Select Your Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </div>
-        {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
-
-        {/* Date of Birth */}
-        <div className="flex items-center mb-3">
-          <FaCalendarAlt className="text-gray-500 mr-2" />
-          <input
-            type="date" placeholder="dd-mm-yyyy"
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("dob")}
-            name='dob'
-          />
-        </div>
-        {errors.dob && <p className="text-red-500">{errors.dob.message}</p>}
-
-        {/* Country */}
-        <div className="flex items-center mb-3">
-          <FaFlag className="text-gray-500 mr-2" />
-          <select
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("country")}
-            name='country'
-            onChange={(e) => handleCountryChange(
-              countries.find((c)=>c.isoCode === e.target.value)
-          )}
-      >
-          <option value="">Select Country</option>
-          {countries.map((country) =>(
-                  <option key={country.isoCode} value={country.isoCode}>
-                      {country.name}
-                  </option>
-              ))}
-      </select>
-        </div>
-        {errors.country && <p className="text-red-500">{errors.country.message}</p>}
-
-        {/* State */}
-        <div className="flex items-center mb-3">
-          <FaFlag className="text-gray-500 mr-2" />
-          <select
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            disabled={!selectedCountry}
-            {...register("state")}
-            name='state'
-            >
-                <option value="">Select State</option>
-                {states.map((state) => (
-                    <option value={state.isoCode} key={state.isoCode}>
-                        {state.name}
-                    </option>
-                ))}
-            </select>
-        </div>
-        {errors.state && <p className="text-red-500">{errors.state.message}</p>}
-
-        {/* Password */}
-        <div className="flex items-center mb-3">
-          <FaLock className="text-gray-500 mr-2" />
-          <input
-            type="password"
-            placeholder="Password"
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("password")}
-            name='password'
-          />
-        </div>
-        {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-
-        {/* Confirm Password */}
-        <div className="flex items-center mb-3">
-          <FaLock className="text-gray-500 mr-2" />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("password_confirmation")}
-            name='password_confirmation'
-          />
-        </div>
-        {errors.password_confirmation && <p className="text-red-500">{errors.password_confirmation.message}</p>}
-
-        {/* Recovery Question */}
-        <div className="flex items-center mb-3">
-          <FaKey className="text-gray-500 mr-2" />
-          <select className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-          {...register("recovery_question")}
-          name='recovery_question'
-          >
-            <option value="">Password Recovery Question</option>
-            <option value="Childhood favourite movie">Childhood favourite movie</option>
-            <option value="Dream holiday city">Dream holiday city</option>
-            <option value="Dream car model">Dream car model</option>
-            {/* <option value="primary school favorite teacher">primary school favourite teacher</option> */}
-            {/* <option value="Name of your secondary school best friend">Name of your secondary school best friend</option> */}
-            {/* <option value="Your childhood favourite musician name">Your childhood favourite musician name</option> */}
-            {/* <option value="Your childhood favourite song title">Your childhood favourite song title</option> */}
-            {/* Add more questions as needed */}
-          </select>
-        </div>
-        {errors.recovery_question && <p className="text-red-500">{errors.recovery_question.message}</p>}
-        {/* Recovery Answer */}
-        <div className="flex items-center mb-3">
-          <FaKey className="text-gray-500 mr-2" />
-          <input
-            type="text"
-            placeholder="Answer"
-            className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-            {...register("answer")}
-            name='answer'
-          />
-        </div>
-        {errors.answer && <p className="text-red-500">{errors.answer.message}</p>}
-
-        </>
-            ) :(
-                <>
-
+        <label htmlFor="role" className='font-semibold text-xs my-3'>Counselor Registration</label>
 
                 {/* Username */}
         <div className="flex items-center mb-3">
@@ -305,6 +159,7 @@ const Register = () => {
           />
         </div>
         {errors.username && <p className="text-red-500">{errors.username.message}</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
         {/* First Name */}
         <div className="flex items-center mb-3">
@@ -341,13 +196,26 @@ const Register = () => {
           <FaRegImage className="text-gray-500 mr-2" />
           <input type="file" className="flex-grow h-12 p-2 w-[70%] bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("image")}
+          onChange={handleFileChange}
           name='image'
+          accept="image/jpeg, image/png, image/jpg"
           />
         </div>
-        {errors.image && <p className="text-red-500">{errors.image.message}</p>}
+        {errors.image && <p className="text-red-500">{errors.image.message || "Invalid image upload"}</p>}
 
-        {/* Counseling Field (for counselors only) */}
-        {role === "counselor" && (
+
+                {/* Image
+          <div className="flex items-center mb-3">
+          <FaRegImage className="text-gray-500 mr-2" />
+          <input type="file"
+            accept="image/*"
+            {...register("image")}
+            className="flex-grow h-12 p-2 w-[70%] bg-gray-200 rounded focus:outline-none focus:ring ring-red_500"
+            name='image'
+          />
+        </div>
+            {errors.counseling_field && <p className="text-red-500">{errors.counseling_field.message}</p>} */}
+
           <div className="flex items-center mb-3">
             <GiField className="text-gray-500 mr-2" />
             <input type="text" placeholder="Counseling Field" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -355,7 +223,6 @@ const Register = () => {
             name='counseling_field'
             />
           </div>
-        )}
         {errors.counseling_field && <p className="text-red-500">{errors.counseling_field.message}</p>}
 
         {/* Date of Birth */}
@@ -472,28 +339,25 @@ const Register = () => {
         <div className="flex items-center mb-3">
           <FaKey className="text-gray-500 mr-2" />
           <input type="text" placeholder="Answer" className="flex-grow h-12 px-4 bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
-          {...register("recovery_answer")}
-          name='recovery_answer'
+          {...register("answer")}
+          name='answer'
           />
         </div>
         {errors.answer && <p className="text-red-500">{errors.answer.message}</p>}
 
-        </>
-            )}
-
         {/* Register Button */}
         <button type="submit" className="h-12 px-6 w-full bg-bRed mt-8 rounded font-semibold text-white hover:bg-red-700" disabled={isLoading}>
-          {isLoading ? <Loader className='animate-spin mx-auto size={24}'/> : "Register"}
+          {isLoading ? <Loader className='animate-spin mx-auto' size={24}/> : "Register"}
         </button>
 
         <div className="flex mt-6 justify-center text-xs">
-                <Link to="/login" className="text-bRed hover:text-red-700">Already have an account</Link>
+                <Link to="/login-role-choose" className="text-bRed hover:text-red-700">Already have an account</Link>
                 <span className="mx-2 text-gray-300">/</span>
-                <Link to="/login" className="text-bRed hover:text-red-700">Log in</Link>
+                <Link to="/choose-login-role" className="text-bRed hover:text-red-700">Log in</Link>
             </div>
       </form>
     </div>
   );
 };
 
-export default Register;
+export default CounselorRegister;

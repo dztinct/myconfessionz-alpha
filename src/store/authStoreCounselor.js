@@ -7,9 +7,9 @@ axios.defaults.withCredentials = true;
 // Axios Interceptor for Token Injection
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const counselor_token = localStorage.getItem('counselor_auth_token');
+    if (counselor_token) {
+      config.headers.Authorization = `Bearer ${counselor_token}`;
     }
     return config;
   },
@@ -17,30 +17,35 @@ axios.interceptors.request.use(
 );
 
 // Auth Store
-export const useAuthStore = create((set) => ({
-  token: localStorage.getItem('authCounselor_token') || null,
+export const useAuthStoreCounselor = create((set) => ({
+  counselor_token: localStorage.getItem('counselor_auth_token') || null,
   counselor: JSON.parse(localStorage.getItem('counselor')) || null,
-  isAuthenticated: !!localStorage.getItem('auth_token'),
+  isAuthenticatedCounselor: !!localStorage.getItem('counselor_auth_token'),
   isLoading: false,
   error: null,
-  isCheckingAuth: false,
+  isCheckingAuthCounselor: false,
 
-  // Helper: Save user and token to localStorage and state
-  setAuth: (token, user) => {
-    localStorage.setItem('auth_token', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    set({ token, user, isAuthenticated: true, isLoading: false, error: null });
+  // Helper: Save counselor and counselor_token to localStorage and state
+  setAuth: (counselor_token, counselor) => {
+    localStorage.setItem('counselor_auth_token', counselor_token);
+    localStorage.setItem('counselor', JSON.stringify(counselor));
+    set({ counselor_token, counselor, isAuthenticated: true, isLoading: false, error: null });
   },
 
   // Signup
-      signupUser: async (role, username, password, password_confirmation, state, country, recovery_question, answer, gender, dob) => {
-  // signup: async (credentials) => {
+      signup: async (username, password, password_confirmation, state, country, recovery_question, answer, gender, dob, bio, email, counseling_field, realImageData, first_name, last_name) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_URL}/register-user`, {role, username, password, password_confirmation, state, country, recovery_question, answer, gender, dob});
-      const { token, user } = response.data;
-      useAuthStore.getState().setAuth(token, user);
-      return response.data;
+        console.log(realImageData)
+        const response = await axios.post(`${API_URL}/register-counselor`, {username, password, password_confirmation, state, country, recovery_question, answer, gender, dob, bio, email, counseling_field, realImageData, first_name, last_name}, {
+            headers: {
+            'Content-Type': 'multipart/form-data',
+        }},
+        );
+        console.log(response.data)
+        const { counselor_token, counselor } = response.data;
+        useAuthStore.getState().setAuth(counselor_token, counselor);
+        return response.data;
     } catch (error) {
       set({
         error: error.response?.data?.error || "Error signing up",
@@ -51,15 +56,15 @@ export const useAuthStore = create((set) => ({
   },
 
   // Login
-  loginUser: async ( username, password ) => {
+  login: async ( email, password ) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_URL}/login-user`, {
+      const response = await axios.post(`${API_URL}/login-counselor`, {
         username,
         password,
       });
-      const { token, user } = response.data;
-      useAuthStore.getState().setAuth(token, user);
+      const { counselor_token, counselor } = response.data;
+      useAuthStore.getState().setAuth(counselor_token, counselor);
       return response.data;
     } catch (error) {
       set({
@@ -71,12 +76,12 @@ export const useAuthStore = create((set) => ({
   },
 
   // Check Authentication
-  checkAuthUser: async () => {
+  checkAuthCounselor: async () => {
     set({ isCheckingAuth: true });
     try {
-      const response = await axios.get(`${API_URL}/auth-check-user`);
-      const { token, user } = response.data;
-      useAuthStore.getState().setAuth(token, user);
+      const response = await axios.get(`${API_URL}/auth-check-counselor`);
+      const { counselor_token, counselor } = response.data;
+      useAuthStore.getState().setAuth(counselor_token, counselor);
     } catch (error) {
       set({ isAuthenticated: false });
       console.error("Error during auth check:", error);
@@ -86,16 +91,16 @@ export const useAuthStore = create((set) => ({
   },
 
   // Logout
-  logoutUser: async () => {
+  logoutCounselor: async () => {
     set({ isLoading: true });
     try {
-      await axios.get(`${API_URL}/logout-user`);
+      await axios.get(`${API_URL}/logout-counselor`);
     } catch (error) {
       console.error("Error during logout:", error);
     } finally {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
-      set({ token: null, user: null, isAuthenticated: false, isLoading: false });
+      localStorage.removeItem('counselor_auth_token');
+      localStorage.removeItem('counselor');
+      set({ counselor_token: null, counselor: null, isAuthenticated: false, isLoading: false });
     }
   },
 }));

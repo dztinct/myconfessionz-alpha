@@ -28,14 +28,14 @@ const LoggedOutNav = () => {
                 {/* Desktop Menu */}
                 <div className="hidden md:flex space-x-6">
                 <Link
-                    to="/login"
+                    to="/choose-login-role"
                     className="flex items-center space-x-1 hover:text-gray-200 transition duration-300"
                 >
                     <FaUser />
                     <span>Login</span>
                 </Link>
                 <Link
-                    to="/register"
+                    to="/choose-register-role"
                     className="flex items-center space-x-1 hover:text-gray-200 transition duration-300"
                 >
                     <FaSignInAlt />
@@ -57,7 +57,7 @@ const LoggedOutNav = () => {
             {isOpen && (
                 <div className="md:hidden mt-3 space-y-2 bg-red-700 p-4 rounded-lg">
                 <Link
-                    to="/login"
+                    to="/choose-login-role"
                     className="flex items-center space-x-2 text-white hover:bg-red-800 p-2 rounded transition duration-300"
                     onClick={handleLinkClick} // Close menu on click
                 >
@@ -65,7 +65,7 @@ const LoggedOutNav = () => {
                     <span>Login</span>
                 </Link>
                 <Link
-                    to="/register"
+                    to="/choose-register-role"
                     className="flex items-center space-x-2 text-white hover:bg-red-800 p-2 rounded transition duration-300"
                     onClick={handleLinkClick} // Close menu on click
                 >

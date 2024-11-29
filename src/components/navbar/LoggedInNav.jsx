@@ -24,24 +24,8 @@ const LoggedInNav = () => {
     const logOut = async () => {
       
       try {
-        const loggedOut = logoutUser()
-        if (loggedOut) {
-          navigate('/login');
-        }
-        // // Send request to backend to log out the user
-        // // await axios.post('http://localhost:5000/api/user/auth/logout', {}, { withCredentials: true });
-        // await axios.post('http://localhost:8000/api/user/logout-user', {}, { withCredentials: true });
-       
-        // // Clear cookies
-        // cookies.remove('_auth', { path: '/' });
-        // cookies.remove('_auth_state'); // Remove auth state
-        // cookies.remove('_auth_type');  // Remove auth type
-        // cookies.remove('jwt');         // Remove custom JWT
-
-        //   // Sign out on the frontend
-        // // Optionally navigate to the login page or home
-        // // setTimeout(() => navigate('/login'), 200); // Adding a slight delay
-        // setTimeout(() => window.location.href = '/login', 200); // Adding a slight delay
+        await logoutUser()
+          navigate('/');
     } catch (error) {
       console.error("Error logging out:", error);
     }
