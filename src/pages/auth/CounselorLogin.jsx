@@ -5,8 +5,8 @@ import * as yup from 'yup';
 import { FaUser, FaLock } from 'react-icons/fa';
 import logo from '../../images/myconfessionz.png'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore';
 import { Loader } from 'lucide-react';
+import { useAuthStoreCounselor } from '../../store/authStoreCounselor';
 
 const CounselorLogin = () => {
   // Define validation schema based on role
@@ -22,14 +22,14 @@ const CounselorLogin = () => {
     // log user in and redirect to homepage
     const navigate = useNavigate()
 
-    const { login, isLoading, error } = useAuthStore()
+    const { login, isLoading, error } = useAuthStoreCounselor()
 
   // Handle login form submission
   const onSubmit = async (data, event) => {
     event.preventDefault();
     try {
-        await loginUser(data.username, data.password)      
-          navigate('/home');
+        await login(data.email, data.password)      
+        setTimeout(() => navigate('/home'), 500); // Adding a slight delay
 
     } catch (error) {
       console.error("Login error:", error);
@@ -81,7 +81,7 @@ const CounselorLogin = () => {
         </button>
 
         <div className="flex mt-4 justify-center text-xs">
-                <Link to="/couselor-forgot-password" className="text-bRed hover:text-red-700">Forgot password</Link>
+                <Link to="/counselor-forgot-password" className="text-bRed hover:text-red-700">Forgot password</Link>
                 <span className="mx-2 text-gray-300">/</span>
                 <Link to="/choose-register-role" className="text-bRed hover:text-red-700">Register</Link>
             </div>

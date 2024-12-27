@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 const LoggedInFooter = () => {
   return (
     <div>
-        <nav className="fixed bottom-0 w-full bg-bRed text-white py-2 px-2">
+        <nav className="fixed bottom-0 w-full bg-bRed text-white py-2 px-4">
           <div className="container mx-auto flex justify-between items-center">
             {/* Home */}
             <Link to="/" className="flex flex-col items-center cursor-pointer">
@@ -14,40 +14,40 @@ const LoggedInFooter = () => {
             </Link>
 
             {/* Explore */}
-            <div className="flex flex-col items-center cursor-pointer">
+            <Link to="/explore" className="flex flex-col items-center cursor-pointer">
               <FaCompass size={24} />
               <span className="text-xs mt-1">Explore</span>
-            </div>
+            </Link>
 
             {/* Rooms */}
-            <div className="flex flex-col items-center cursor-pointer">
+            <Link  to="/rooms" className="flex flex-col items-center cursor-pointer">
               <FaUsers size={24} />
               <span className="text-xs mt-1">Rooms</span>
-            </div>
+            </Link>
 
             {/* Confess - Center Button */}
-            <div className="flex flex-col items-center cursor-pointer">
+            <Link to="/create-post" className="flex flex-col items-center cursor-pointer">
               <FiPlusCircle size={30} className="text-400 animate-zoom" />
               <span className="text-xs mt-1">Confess</span>
-            </div>
+            </Link>
 
             {/* Chat */}
-            <div className="flex flex-col items-center cursor-pointer">
+            <Link to="/user-chat" className="flex flex-col items-center cursor-pointer">
               <FaCommentDots size={24} />
               <span className="text-xs mt-1">Chat</span>
-            </div>
+            </Link>
 
             {/* Profile */}
-            <div className="flex flex-col items-center cursor-pointer">
+            <Link to="/user-profile" className="flex flex-col items-center cursor-pointer">
               <FaUser size={24} />
               <span className="text-xs mt-1">Profile</span>
-            </div>
+            </Link>
 
             {/* Counselors */}
-            <div className="flex flex-col items-center cursor-pointer">
+            <Link to="" className="flex flex-col items-center cursor-pointer">
               <FaComments size={24} />
               <span className="text-xs mt-1">Counselors</span>
-            </div>
+            </Link>
           </div>
         </nav>
     </div>

@@ -32,10 +32,20 @@ const AnonymousRegister = () => {
         isValid(parse(value, "yyyy-MM-dd", new Date()))
     ),
     gender: yup.string().required("Gender is required"),
-    password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
-    password_confirmation: yup.string()
-      .oneOf([yup.ref('password'), null], "Passwords must match")
-      .required("Please confirm your password"),
+    password: yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain an uppercase letter")
+    .matches(/[a-z]/, "Password must contain a lowercase letter")
+    .matches(/\d/, "Password must contain a number"),
+  
+      password_confirmation: yup.string()
+        .oneOf([yup.ref('password'), null], "Passwords must match")
+        .required("Please confirm your password"),
+    // password: yup.string().required("Password is required").min(8, "Password must be at least 6 characters"),
+    // password_confirmation: yup.string()
+    //   .oneOf([yup.ref('password'), null], "Passwords must match")
+    //   .required("Please confirm your password"),
     country: yup.string().required("Country is required"),
     state: yup.string().when('country', {
       is: (value) => value && value.length > 0,
@@ -64,7 +74,9 @@ const AnonymousRegister = () => {
 
     console.log(data)
     toast.success("Registration Successful");
-    setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+    await allPosts()
+    // setTimeout(() => navigate('/home'), 200); // Adding a slight delay
+    setTimeout(() => window.location.href = '/home', 200); // Adding a slight delay
     } catch (error) {
       console.error("Error registering user:", error);
     }
@@ -107,7 +119,7 @@ const AnonymousRegister = () => {
           />
         </div>
         {errors.username && <p className="text-red-500">{errors.username.message}</p>}
-        {error && <p className="text-red-500 font-semibold">{error}</p>}
+        
 
         {/* Gender */}
         <div className="flex items-center mb-3">
@@ -233,6 +245,7 @@ const AnonymousRegister = () => {
           />
         </div>
         {errors.answer && <p className="text-red-500">{errors.answer.message}</p>}
+        {error && <p className="text-red-500 font-semibold">{error}</p>}
 
 
         {/* Register Button */}

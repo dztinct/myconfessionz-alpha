@@ -22,8 +22,6 @@ import logo from '../../images/myconfessionz.png';
 import { useAuthStoreCounselor } from '../../store/authStoreCounselor';
 
 const CounselorRegister = () => {
-  const [imageData, setImageData] = useState(null);
-
   const [countries, setCountries] = useState(Country.getAllCountries())
   const [states, setStates] = useState([])
 
@@ -35,10 +33,6 @@ const CounselorRegister = () => {
   }
 
 
-  const handleFileChange = (e) => {
-    setImageData(e.target.files[0])
-  };
-
   const schema = yup.object().shape({
 
       // counselor specific fields
@@ -48,16 +42,6 @@ const CounselorRegister = () => {
     counseling_field: yup.string().required("Counseling field is required"),
     bio: yup.string().required("Bio is required").min(10, "Bio must be at least 10 characters"),
     username: yup.string().required("Username is required").min(4, "Username must be at least 4 characters"),
-    // image: yup.string().required("Image is required"),
-    image: yup.mixed()
-      .required("Image is required")
-      // .test("fileType", "Unsupported image format", (value) => {
-      //   return value && ["file/jpeg", "file/png", "file/jpg"].includes(value?.type);})
-      // .test("fileSize", "File size is too large", (value) => {
-      //   return value && value.size <= 2 * 1024 * 1024})
-      .test("fileRequired", "Image is required", (value) => {
-    return value !== undefined;}),
-
 
     //new from chatGPT (Sunday)
     dob: yup
@@ -69,10 +53,9 @@ const CounselorRegister = () => {
 
     gender: yup.string().required("Gender is required"),
     // password: yup.string().required("Password is required").min(6, "Password must be at least 6 characters"),
-    password: yup
-  .string()
+    password: yup.string()
   .required("Password is required")
-  .min(6, "Password must be at least 6 characters")
+  .min(8, "Password must be at least 8 characters")
   .matches(/[A-Z]/, "Password must contain an uppercase letter")
   .matches(/[a-z]/, "Password must contain a lowercase letter")
   .matches(/\d/, "Password must contain a number"),
@@ -100,30 +83,18 @@ const CounselorRegister = () => {
 
   const navigate = useNavigate()
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
-      [name]: value,
-    });
-  };
-
   const { signup, error, isLoading } = useAuthStoreCounselor()
   // Handle registration form submission
   const onSubmit = async (data, event) => {
-    event.preventDefault()
+    event.preventDefault
     try {
-      const formData = new FormData();
-      const realImageData = formData.append("image", imageData); // Append the image
+      await signup(data.username, data.password, data.password_confirmation, data.state, data.country, data.recovery_question, data.answer, data.gender, data.dob, data.bio, data.email, data.counseling_field, data.first_name, data.last_name)
 
-console.log(imageData.name, formData)
-      await signup(data.username, data.password, data.password_confirmation, data.state, data.country, data.recovery_question, data.answer, data.gender, data.dob, data.bio, data.email, data.counseling_field, imageData.name, data.first_name, data.last_name)
-
-      // console.log(data.image[0].name)
+      console.log(data)
       toast.success("Registration Successful");
       setTimeout(() => navigate('/home'), 200); // Adding a slight delay
     } catch (error) {
-      console.error("Error registering user:", error);
+      console.error("Error registering counselor:", error);
     }
   };
 
@@ -136,7 +107,7 @@ console.log(imageData.name, formData)
         <div className='mt-5'>
             <span className='text-white'>Create a new <span className='text-bRed'>account</span></span>
         </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col bg-white rounded shadow-lg p-12 mt-12 animate-slide-in-right w-full max-w-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col bg-white rounded shadow-lg p-12 mt-12 animate-slide-in-right w-full max-w-lg" encType='multipart/form-data'>
         {/* User Instructions */}
 
         <p className="text-center text-xs text-red-600 mb-4">
@@ -159,7 +130,7 @@ console.log(imageData.name, formData)
           />
         </div>
         {errors.username && <p className="text-red-500">{errors.username.message}</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        
 
         {/* First Name */}
         <div className="flex items-center mb-3">
@@ -191,30 +162,25 @@ console.log(imageData.name, formData)
         </div>
         {errors.email && <p className="text-red-500">{errors.email.message}</p>}
 
-        {/* Image */}
+        {/* Image
         <div className="flex items-center mb-3">
           <FaRegImage className="text-gray-500 mr-2" />
           <input type="file" className="flex-grow h-12 p-2 w-[70%] bg-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-red-500" 
           {...register("image")}
-          onChange={handleFileChange}
           name='image'
-          accept="image/jpeg, image/png, image/jpg"
+          onChange={handleImageChange}
+          accept="image/*"
           />
         </div>
-        {errors.image && <p className="text-red-500">{errors.image.message || "Invalid image upload"}</p>}
+        {errors.imageError && <p className="text-red-500">{errors.imageError}</p>}
+        {errors.image && <p className="text-red-500">{errors.image.message}</p>} */}
 
-
-                {/* Image
-          <div className="flex items-center mb-3">
+                {/* Image */}
+                {/* <div className="flex items-center mb-3">
           <FaRegImage className="text-gray-500 mr-2" />
-          <input type="file"
-            accept="image/*"
-            {...register("image")}
-            className="flex-grow h-12 p-2 w-[70%] bg-gray-200 rounded focus:outline-none focus:ring ring-red_500"
-            name='image'
-          />
-        </div>
-            {errors.counseling_field && <p className="text-red-500">{errors.counseling_field.message}</p>} */}
+          <input type="file" accept="image/*" {...register("image")} onChange={handleImageChange} className="flex-grow h-12 p-2 w-[70%] bg-gray-200 rounded focus:outline-none focus:ring ring-red_500" />
+          {imageError && <p className="text-red-500">{imageError}</p>}
+        </div> */}
 
           <div className="flex items-center mb-3">
             <GiField className="text-gray-500 mr-2" />
@@ -344,6 +310,7 @@ console.log(imageData.name, formData)
           />
         </div>
         {errors.answer && <p className="text-red-500">{errors.answer.message}</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
         {/* Register Button */}
         <button type="submit" className="h-12 px-6 w-full bg-bRed mt-8 rounded font-semibold text-white hover:bg-red-700" disabled={isLoading}>

@@ -1,5 +1,4 @@
-
-import logo from '../images/myconfessionz.png';
+import logo from '../../images/myconfessionz.png'
 import { useEffect } from "react";
 import { Country, State }  from 'country-state-city';
 // LIKE
@@ -11,7 +10,9 @@ import { BsChatSquareDotsFill } from "react-icons/bs";
 // SHARE
 import { FaShare } from "react-icons/fa6";
 import { TbShare3 } from "react-icons/tb";
-import { postStore } from '../store/postStore';
+import { useParams } from "react-router-dom";
+import { postStore } from '../../store/postStore';
+
 
 // <HiOutlineHandThumbUp />
 // <HiHandThumbUp />
@@ -22,15 +23,16 @@ import { postStore } from '../store/postStore';
 // <FaShare />
 // <TbShare3 />
 
-const ExplorePosts = () => {
-  const { post, allPostsExplore } = postStore();
+const RoomPosts = () => {
+  const { post, fetchRoom } = postStore();
+  const { room } = useParams();
   
   useEffect(() => {
     const fetchPosts = async () => {
-      await allPostsExplore();
+      await fetchRoom(room);
     };
     fetchPosts();
-  }, [allPostsExplore]);
+  }, [fetchRoom]);
 
   // if (isLoading) {
   //   return (
@@ -137,4 +139,4 @@ const ExplorePosts = () => {
   );
 };
 
-export default ExplorePosts;
+export default RoomPosts;

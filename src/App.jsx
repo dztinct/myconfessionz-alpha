@@ -5,7 +5,7 @@ import Footer from "./components/Footer"
 import Explore from "./pages/Explore"
 import Login from "./pages/auth/Login"
 import Register from "./pages/auth/Register"
-import Error from "./pages/Errors/Error"
+import Error from "./pages/errors/Error"
 import Home from "./pages/Home"
 import { Toaster } from "react-hot-toast"
 import { useAuthStore } from "./store/authStore"
@@ -18,23 +18,32 @@ import LoginRoleChoose from "./pages/LoginRoleChoose"
 import AnonymousRegister from "./pages/auth/AnonymousRegister"
 import CounselorRegister from "./pages/auth/CounselorRegister"
 import { useAuthStoreCounselor } from "./store/authStoreCounselor"
+import AnonymousForgotPassword from "./pages/auth/AnonymousForgotPassword"
+import AnonymousForgotPasswordQuestion from "./pages/auth/AnonymousForgotPasswordQuestion"
+import AnonymousResetPassword from "./pages/auth/AnonymousResetPassword"
+import CounselorForgotPassword from "./pages/auth/CounselorForgotPassword"
+import CounselorForgotPasswordQuestion from "./pages/auth/CounselorForgotPasswordQuestion"
+import CounselorResetPassword from "./pages/auth/CounselorResetPassword"
+import Rooms from "./pages/Posts/Rooms"
+import CreatePost from "./pages/Posts/CreatePost"
+import RoomPosts from "./pages/Posts/RoomPosts"
+import UserProfile from "./pages/UserProfile"
+import ChangeUsername from "./pages/ChangeUsername"
 
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { isAuthenticated } = useAuthStore()
   const isAuthenticatedCounselor = useAuthStoreCounselor((state) => state.isAuthenticated);
 
-  if (!isAuthenticated || !isAuthenticatedCounselor) {
+  if (!isAuthenticated && !isAuthenticatedCounselor) {
     return <Navigate to="/" replace />;
-    
   }
 
-  console.log(isAuthenticated || isAuthenticatedCounselor)
-
-  return children
+  return children;
 };
 
+
 const RedirectAuthenticated = ({ children }) => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { isAuthenticated } = useAuthStore()
   const isAuthenticatedCounselor = useAuthStoreCounselor((state) => state.isAuthenticated);
 
   if (isAuthenticated || isAuthenticatedCounselor) {
@@ -44,44 +53,212 @@ const RedirectAuthenticated = ({ children }) => {
   return children;
 };
 
+
 const App = () => {
-  const { isCheckingAuth, checkAuthUser } = useAuthStore()
-  const { isCheckingAuthCounselor, checkAuthCounselor } = useAuthStoreCounselor()
+  const { isCheckingAuth, checkAuthUser } = useAuthStore();
+  const { isCheckingAuthCounselor, checkAuthCounselor } = useAuthStoreCounselor();
 
   useEffect(() => {
-    checkAuthUser()
-  }, [checkAuthUser])
+    checkAuthUser();
+  }, [checkAuthUser]);
 
   useEffect(() => {
-    checkAuthCounselor()
-  }, [checkAuthCounselor])
+    checkAuthCounselor();
+  }, [checkAuthCounselor]);
 
-if(isCheckingAuth || isCheckingAuthCounselor) return <LoadingSpinner/>
+  if (isCheckingAuth || isCheckingAuthCounselor) return <LoadingSpinner />;
 
   return (
-      <Router>
-        <div>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<RedirectAuthenticated><Landing/></RedirectAuthenticated>}/>
-              <Route path="/home" element={<ProtectedRoute><Home/></ProtectedRoute>}/>
-              <Route path="/explore" element={<ProtectedRoute><Explore/></ProtectedRoute>}/>
-              <Route path="/login" element={<RedirectAuthenticated><Login/></RedirectAuthenticated>}/>
-              <Route path="/register" element={<RedirectAuthenticated><Register/></RedirectAuthenticated>}/>
-              <Route path="/counselor-login" element={<RedirectAuthenticated><CounselorLogin/></RedirectAuthenticated>}/>
-              <Route path="/anonymous-login" element={<RedirectAuthenticated><AnonymousLogin/></RedirectAuthenticated>}/>
-              <Route path="/counselor-register" element={<RedirectAuthenticated><CounselorRegister/></RedirectAuthenticated>}/>
-              <Route path="/anonymous-register" element={<RedirectAuthenticated><AnonymousRegister/></RedirectAuthenticated>}/>
-              <Route path="/choose-login-role" element={<RedirectAuthenticated><LoginRoleChoose/></RedirectAuthenticated>}/>
-              <Route path="/choose-register-role" element={<RedirectAuthenticated><RegisterRoleChoose/></RedirectAuthenticated>}/>
-              <Route path="*" element={<Error/>}/>
-            </Routes>
-            <Toaster/>
-            <Footer />
-        </div>
-      </Router>
-  )
-}
+    <Router>
+      <div>
+        <Navbar />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <RedirectAuthenticated>
+                <Landing />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/explore"
+            element={
+              <ProtectedRoute>
+                <Explore />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rooms"
+            element={
+              <ProtectedRoute>
+                <Rooms />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-post"
+            element={
+              <ProtectedRoute>
+                <CreatePost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/room/:room"
+            element={
+              <ProtectedRoute>
+                <RoomPosts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user-profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/change-username"
+            element={
+              <ProtectedRoute>
+                <ChangeUsername />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <RedirectAuthenticated>
+                <Login />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <RedirectAuthenticated>
+                <Register />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/counselor-login"
+            element={
+              <RedirectAuthenticated>
+                <CounselorLogin />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/anonymous-login"
+            element={
+              <RedirectAuthenticated>
+                <AnonymousLogin />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/counselor-register"
+            element={
+              <RedirectAuthenticated>
+                <CounselorRegister />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/anonymous-register"
+            element={
+              <RedirectAuthenticated>
+                <AnonymousRegister />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/choose-login-role"
+            element={
+              <RedirectAuthenticated>
+                <LoginRoleChoose />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/choose-register-role"
+            element={
+              <RedirectAuthenticated>
+                <RegisterRoleChoose />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/anonymous-forgot-password"
+            element={
+              <RedirectAuthenticated>
+                <AnonymousForgotPassword />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/anonymous-forgot-password-question"
+            element={
+              <RedirectAuthenticated>
+                <AnonymousForgotPasswordQuestion />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/anonymous-reset-password"
+            element={
+              <RedirectAuthenticated>
+                <AnonymousResetPassword />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/counselor-forgot-password"
+            element={
+              <RedirectAuthenticated>
+                <CounselorForgotPassword />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/counselor-forgot-password-question"
+            element={
+              <RedirectAuthenticated>
+                <CounselorForgotPasswordQuestion />
+              </RedirectAuthenticated>
+            }
+          />
+          <Route
+            path="/counselor-reset-password"
+            element={
+              <RedirectAuthenticated>
+                <CounselorResetPassword />
+              </RedirectAuthenticated>
+            }
+          />
+
+          <Route path="*" element={<Error />} />
+        </Routes>
+        <Toaster />
+        <Footer />
+      </div>
+    </Router>
+  );
+};
+
 
 
 export default App;

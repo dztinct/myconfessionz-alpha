@@ -1,9 +1,8 @@
-import React from 'react'
 
 const HomeLeftSideBar = () => {
   return (
     <div>
-      <div className="flex flex-col h-full px-8 w-60 dark:bg-gray-50 dark:text-gray-800 mt-20 hidden lg:block">
+      <div className="flex flex-col h-full px-8 w-60 dark:bg-gray-50 dark:text-gray-800 mt-20 hidden lg:block font-semibold">
 	<div className="space-y-3">
 		<div className="flex items-center justify-between">
 			<h2>Search Counselors <br />By Name</h2>

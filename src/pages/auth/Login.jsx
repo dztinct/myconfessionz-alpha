@@ -40,13 +40,13 @@ const Login = () => {
     //   }
     // });
 
-    const { loginUser, isLoading, error } = useAuthStore()
+    const { login, isLoading, error } = useAuthStore()
 
   // Handle login form submission
   const onSubmit = async (data, event) => {
     event.preventDefault();
     try {
-      const loggedIn = await loginUser(data.username, data.password)
+      const loggedIn = await login(data.username, data.password)
       // console.log(data)
 
 
@@ -60,7 +60,7 @@ const Login = () => {
 
 
         if (loggedIn) {
-          navigate('/home');
+          setTimeout(() => navigate('/home'), 500); // Adding a slight delay
           console.log(loggedIn)
         }
       //   } else {

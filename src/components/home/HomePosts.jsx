@@ -1,241 +1,164 @@
+import { postStore } from "../../store/postStore";
+import logo from '../../images/myconfessionz.png';
+import { useEffect } from "react";
+import { Country, State }  from 'country-state-city';
+// LIKE
+import { HiOutlineHandThumbUp } from "react-icons/hi2";
+import { HiHandThumbUp } from "react-icons/hi2";
+// COMMENT
+import { BsChatSquareDots } from "react-icons/bs";
+import { BsChatSquareDotsFill } from "react-icons/bs";
+// SHARE
+import { FaShare } from "react-icons/fa6";
+import { TbShare3 } from "react-icons/tb";
+import { useActionStore } from "../../store/actionStore";
+import { useAuthStore } from "../../store/authStore";
 
 
-const HomePosts = () => {
+// <HiOutlineHandThumbUp />
+// <HiHandThumbUp />
+
+// <BsChatSquareDots />
+// <BsChatSquareDotsFill />
+
+// <FaShare />
+// <TbShare3 />
+
+const HomePosts = ({ postId }) => {
+  const { post, allPostsHome } = postStore();
+  const { user } = useAuthStore()
+
+  const { likedPost, isLiked, toggleLike, error, postLikeCount } = useActionStore()
+    // likeCount: state.likeCount,
+    // isLiked: state.isLiked,
+    // toggleLike: state.toggleLike,
+    // error: state.error,
+
+  
+  useEffect(() => {
+  // Optionally fetch the initial like status and count here
+  }, [postId]);
+
+  const handleLike = (postId) => {
+    toggleLike(postId);
+  };
+
+  
+  useEffect(() => {
+    const fetchPosts = async () => {
+      await allPostsHome();
+    };
+    fetchPosts();
+  }, [allPostsHome]);
+
+
+  // If no posts are available
+  if (!post || post.length === 0) {
+    return (
+      <div className="h-screen w-screen bg-gray-100 flex justify-center items-center">
+        <p className="text-lg text-gray-600">No posts available</p>
+      </div>
+    );
+  }
+
+
+
   return (
-    <div className='my-16'>
-      <section className="flex flex-row flex-wrap mx-auto">
-        {/* Card Component */}
-        <div className="transition-all duration-150 flex w-full px-4 py-1 md:w-[80%] sm:w-[80%] mx-auto">
-          <div className="flex flex-col items-stretch min-h-full pb-4 mb-6 transition-all duration-150 bg-white rounded-lg shadow-lg hover:shadow-2xl">
-            <section className="px-4 py-2 mt-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center flex-1">
-                  <img
-                    className="object-cover h-10 rounded-full"
-                    src="https://thumbs.dreamstime.com/b/default-avatar-photo-placeholder-profile-icon-eps-file-easy-to-edit-default-avatar-photo-placeholder-profile-icon-124557887.jpg"
-                    alt="Avatar"
-                  />
-                  <div className="flex flex-col mx-2">
-                    <a
-                      href="#"
-                      className="font-semibold text-gray-700 hover:underline"
-                    >
-                      Sabeeh Ajibade
-                    </a>
-                    <span className="mx-1 text-xs text-gray-600">
-                      28 Sep 2020
+    <div className="my-28">
+      {post.map((singlePost, idx) => (
+        <section className="flex flex-row flex-wrap mx-auto" key={idx}>
+          {/* Card Component */}
+          <div className="transition-all duration-150 flex w-full px-4 py-1 md:w-[80%] sm:w-[80%] mx-auto">
+            <div className="flex flex-col items-stretch min-h-full pb-4 mb-6 transition-all duration-150 bg-white rounded-lg shadow-lg hover:shadow-2xl">
+              <section className="px-4 py-2 mt-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center flex-1">
+                    <img
+                      className="object-cover h-10 w-14 md:h-10 md:w-10 rounded-full bg-black"
+                      src={logo}
+                      alt="Brand-logo"
+                    />
+                    <div className="flex flex-col mx-2">
+                      <span className="font-semibold text-gray-700 hover:underline text-sm capitalize">
+                        {singlePost.user.username}, {singlePost.user.gender}, {singlePost.user.dob && (
+                          <span className="">
+                            {(() => {
+                              const dob = new Date(singlePost.user.dob);
+                              const today = new Date();
+                              let age = today.getFullYear() - dob.getFullYear();
+                              const monthDiff = today.getMonth() - dob.getMonth();
+                              const dayDiff = today.getDate() - dob.getDate();
+
+                              // Adjust age if the birthday hasn't occurred yet this year
+                              if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+                                age--;
+                              }
+                              return age;
+                            })()}
+                          </span>
+                        )},&nbsp;
+                        {State.getStateByCodeAndCountry(singlePost.user.state, singlePost.user.country).name}, {Country.getCountryByCode(singlePost.user.country).name} <span className="text-lg">{Country.getCountryByCode(singlePost.user.country).flag}</span>
+                      </span>
+                      <span className="mx-1 text-xs text-gray-600">
+                        {new Date(singlePost.created_at).toDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="mt-1 text-xs text-bRed">{singlePost.room}</p>
+                </div>
+              </section>
+              <hr className="border-gray-300" />
+              <p className="flex flex-row flex-wrap w-full px-4 py-2 overflow-hidden text-sm text-justify text-red-700">
+                {singlePost.post}
+              </p>
+
+              <hr className="border-gray-300" />
+              <div className="flex items-center justify-between px-4 py-2 overflow-hidden">
+                <div className="flex flex-row items-center">
+                  <div className="text-sm text-gray-500 flex flex-row items-center mr-2">
+                    <span className="w-4 h-4 mr-3 font-extrabold cursor-pointer">
+                    <button onClick={()=>handleLike(singlePost.id)}>
+                    {
+                      likedPost
+                      && isLiked
+                      && singlePost.id == likedPost.post.id
+                      && user.id == likedPost.post.user_id
+                      ? <HiHandThumbUp /> : <HiOutlineHandThumbUp />
+                    }
+                      {/* {(isLiked ) ? <HiHandThumbUp /> : <HiOutlineHandThumbUp />} */}
+                    </button>
                     </span>
+                    {/* <span>15</span> */}
+                  </div>
+                  {/* <span className="mr-2">|</span> */}
+                  <div className="text-sm font-medium text-gray-500 flex flex-row items-center mr-2">
+                    <span className="w-4 h-4 mr-3 cursor-pointer"><BsChatSquareDots /></span>
+                    {/* <span>25</span> */}
+                  </div>
+                  {/* <span className="mr-2">|</span> */}
+                  <div className="text-sm font-medium text-gray-500 flex flex-row items-center">
+                    <span className="w-4 h-4 mr-3 font-extrabold cursor-pointer"><FaShare /></span>
+                    {/* <span>7</span> */}
                   </div>
                 </div>
-                <p className="mt-1 text-xs text-gray-600">9 minutes read</p>
-              </div>
-            </section>
-            <hr className="border-gray-300" />
-            {/* <div className="flex flex-wrap items-center flex-1 px-4 py-1 text-center mx-auto">
-              <a href="#" className="hover:underline">
-                <h2 className="text-2xl font-bold tracking-normal text-gray-800">
-                  How to Yawn in 7 Days
-                </h2>
-              </a>
-            </div>
-            <hr className="border-gray-300" /> */}
-            <p className="flex flex-row flex-wrap w-full px-4 py-2 overflow-hidden text-sm text-justify text-gray-700">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias,
-              magni fugiat, odit incidunt necessitatibus aut nesciunt
-              exercitationem aliquam id voluptatibus quisquam maiores officia
-              sit amet accusantium aliquid quo obcaecati quasi.
-            </p>
-            <hr className="border-gray-300" />
-            <div className="flex items-center justify-between px-4 py-2 overflow-hidden">
-              {/* <span className="text-xs font-medium text-blue-600 uppercase">
-                Web Programming
-              </span> */}
-              <div className="flex flex-row items-center">
-                <div className="text-xs font-medium text-gray-500 flex flex-row items-center mr-2">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    ></path>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    ></path>
-                  </svg>
-                  <span>1.5k</span>
-                </div>
-                <div className="text-xs font-medium text-gray-500 flex flex-row items-center mr-2">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                    ></path>
-                  </svg>
-                  <span>25</span>
-                </div>
-                <div className="text-xs font-medium text-gray-500 flex flex-row items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                    ></path>
-                  </svg>
-                  <span>7</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        {/* End of Card Component */}
-      </section>
-
-
-
-
-
-
-
-
-
-      <section className="flex flex-row flex-wrap mx-auto">
-        {/* Card Component */}
-        <div className="transition-all duration-150 flex w-full px-4 py-1 md:w-[80%] sm:w-[80%] mx-auto">
-          <div className="flex flex-col items-stretch min-h-full pb-4 mb-6 transition-all duration-150 bg-white rounded-lg shadow-lg hover:shadow-2xl">
-            <section className="px-4 py-2 mt-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center flex-1">
-                  <img
-                    className="object-cover h-10 rounded-full"
-                    src="https://thumbs.dreamstime.com/b/default-avatar-photo-placeholder-profile-icon-eps-file-easy-to-edit-default-avatar-photo-placeholder-profile-icon-124557887.jpg"
-                    alt="Avatar"
-                  />
-                  <div className="flex flex-col mx-2">
-                    <a
-                      href="#"
-                      className="font-semibold text-gray-700 hover:underline"
-                    >
-                      Fajrian Aidil Pratama
-                    </a>
-                    <span className="mx-1 text-xs text-gray-600">
-                      28 Sep 2020
-                    </span>
+                
+                
+                <div className="flex items-center justify-between px-4 py-2 overflow-hidden">
+                  <div className="flex flex-row items-center">
+                    <div className="text-xs font-medium text-gray-500 flex flex-row items-center mr-2">
+                      {/* <span>{likeCount} likes</span> */}
+                      <span>{postLikeCount} likes</span>
+                    </div>
+                    <div className="text-xs font-medium text-gray-500 flex flex-row items-center">
+                      <span>0 comments</span>
+                    </div>
                   </div>
                 </div>
-                <p className="mt-1 text-xs text-gray-600">9 minutes read</p>
-              </div>
-            </section>
-            <hr className="border-gray-300" />
-            {/* <div className="flex flex-wrap items-center flex-1 px-4 py-1 text-center mx-auto">
-              <a href="#" className="hover:underline">
-                <h2 className="text-2xl font-bold tracking-normal text-gray-800">
-                  How to Yawn in 7 Days
-                </h2>
-              </a>
-            </div>
-            <hr className="border-gray-300" /> */}
-            <p className="flex flex-row flex-wrap w-full px-4 py-2 overflow-hidden text-sm text-justify text-gray-700">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias,
-              magni fugiat, odit incidunt necessitatibus aut nesciunt
-              exercitationem aliquam id voluptatibus quisquam maiores officia
-              sit amet accusantium aliquid quo obcaecati quasi.
-            </p>
-            <hr className="border-gray-300" />
-            <div className="flex items-center justify-between px-4 py-2 overflow-hidden">
-              {/* <span className="text-xs font-medium text-blue-600 uppercase">
-                Web Programming
-              </span> */}
-              <div className="flex flex-row items-center">
-                <div className="text-xs font-medium text-gray-500 flex flex-row items-center mr-2">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    ></path>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    ></path>
-                  </svg>
-                  <span>1.5k</span>
-                </div>
-                <div className="text-xs font-medium text-gray-500 flex flex-row items-center mr-2">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                    ></path>
-                  </svg>
-                  <span>25</span>
-                </div>
-                <div className="text-xs font-medium text-gray-500 flex flex-row items-center">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                    ></path>
-                  </svg>
-                  <span>7</span>
-                </div>
               </div>
             </div>
-
           </div>
-        </div>
-        {/* End of Card Component */}
-      </section>
+        </section>
+      ))}
     </div>
   );
 };

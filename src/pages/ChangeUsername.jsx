@@ -3,14 +3,14 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FaLock } from 'react-icons/fa';
-import logo from '../../images/myconfessionz.png'
+import logo from '../images/myconfessionz.png'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore';
 import { Loader } from 'lucide-react';
 import { FaTheaterMasks } from 'react-icons/fa'
 import toast from 'react-hot-toast';
+import { useAuthStore } from '../store/authStore';
 
-const AnonymousLogin = () => {
+const ChangeUsername = () => {
   // Define validation schema based on role
   const schema = yup.object().shape({
     username: yup.string().required("Username is required"),
@@ -24,19 +24,21 @@ const AnonymousLogin = () => {
     // log user in and redirect to homepage
     const navigate = useNavigate()
 
-    const { login, isLoading, error } = useAuthStore()
+    const { changeUsername, isLoading, error } = useAuthStore()
 
   // Handle login form submission
   const onSubmit = async (data, event) => {
     event.preventDefault();
     try {
-        await login(data.username, data.password)
-        toast.success("Login Successful");
-        setTimeout(() => window.location.href = '/home', 500); // Adding a slight delay
+        await changeUsername(data.username, data.password)
+        // if(!error){
+          toast.success("Username changed Successfully");
+          setTimeout(() => window.location.href = '/user-profile', 500); // Adding a slight delay
+        // }
         // setTimeout(() => navigate('/home'), 500); // Adding a slight delay
     } catch (error) {
-        console.error("Login error:", error);
-        console.log(error || "Failed to login. Please try again.");
+        console.error("Error changing username:", error);
+        console.log(error || "Failed to change username. Please try again.");
     }
   };
 
@@ -47,10 +49,10 @@ const AnonymousLogin = () => {
         </div>
 
         <div className='mt-3'>
-            <span className='text-white'>Log in to</span> Myconfessionz
+            <span className='text-white'>Change</span> Anonymous Username
         </div>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col bg-white rounded shadow-lg px-8 pt-4 pb-8 mt-8 animate-slide-in-right">
-        <label htmlFor="role" className="font-semibold text-xs my-3">Anonymous Login</label>
+        <label htmlFor="role" className="font-semibold text-xs my-3">Profile change</label>
 
 
 
@@ -58,7 +60,7 @@ const AnonymousLogin = () => {
               <FaTheaterMasks className="text-gray-500 mr-2" />
               <input
                 type="text"
-                placeholder="Anonymous Username"
+                placeholder="New Anonymous Username"
                 {...register("username")}
                 name='username'
                 autoComplete='username'
@@ -84,13 +86,13 @@ const AnonymousLogin = () => {
 
         <button type="submit" className="h-12 px-6 bg-bRed mt-4 rounded font-semibold text-sm text-red-100 hover:bg-red-700"
           disabled={isLoading}>
-        {isLoading ? <Loader className='animate-spin mx-auto size={24}'/> : "Log in"}
+        {isLoading ? <Loader className='animate-spin mx-auto size={24}'/> : "Change Username"}
         </button>
 
         <div className="flex mt-4 justify-center text-xs">
-                <Link to="/anonymous-forgot-password" className="text-bRed hover:text-red-700">Forgot password</Link>
+                <Link to="/home" className="text-bRed hover:text-red-700">Home</Link>
                 <span className="mx-2 text-gray-300">/</span>
-                <Link to="/choose-register-role" className="text-bRed hover:text-red-700">Register</Link>
+                <Link to="/user-profile" className="text-bRed hover:text-red-700">Profile</Link>
             </div>
 
       </form>
@@ -98,4 +100,4 @@ const AnonymousLogin = () => {
   );
 };
 
-export default AnonymousLogin;
+export default ChangeUsername;

@@ -3,10 +3,9 @@ import { FaUser, FaSignInAlt } from 'react-icons/fa'; // Icons for Login and Reg
 import { FiMenu, FiX } from 'react-icons/fi'; // Hamburger and Close Icons
 import logo from '../../images/myconfessionz.png';
 import { Link } from 'react-router-dom';
-import cookies from 'js-cookie'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { useAuthStore } from '../../store/authStore';
+import { useAuthStoreCounselor } from '../../store/authStoreCounselor'; 
 
 const LoggedInNav = () => {
 
@@ -19,17 +18,30 @@ const LoggedInNav = () => {
   
     // log user out and redirect to login page
     const navigate = useNavigate()
-    const { logoutUser } = useAuthStore()
+    const { logoutUser, user } = useAuthStore()
+    const { logoutCounselor } = useAuthStoreCounselor()
   
-    const logOut = async () => {
+    const logOutUser = async () => {
       
       try {
-        await logoutUser()
+          await logoutUser()
+          setTimeout(() => window.location.href = '/', 500); // Adding a slight delay
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
+    };  
+
+const logOutCounselor = async () => {
+      
+      try {
+        await logoutCounselor()
           navigate('/');
     } catch (error) {
       console.error("Error logging out:", error);
     }
 };  
+
+
   
   return (
     <div>
@@ -50,14 +62,14 @@ const LoggedInNav = () => {
                 className="flex items-center space-x-1 hover:text-gray-200 transition duration-300"
                 >
                 <FaUser />
-                <span>Your name</span>
+                <span>{user ? user ? user.username : "" : ""}</span>
                 </Link>
                 <Link
                 to="/register"
                 className="flex items-center space-x-1 hover:text-gray-200 transition duration-300"
                 >
                 <FaSignInAlt />
-                <span onClick={logOut}>Logout</span>
+                <span onClick={user ? logOutUser : logOutCounselor}>Logout</span>
                 </Link>
             </div>
 
@@ -80,10 +92,10 @@ const LoggedInNav = () => {
                 onClick={handleLinkClick} // Close menu on click
                 >
                 <FaUser />
-                <span>Profile</span>
+                <span>{user ? user.username : ""}</span>
                 </Link>
                 <span
-                onClick={logOut}
+                onClick={user ? logOutUser : logOutCounselor}
                 className="flex items-center space-x-2 text-white hover:bg-red-800 p-2 rounded transition duration-300"
                 >
                 <FaSignInAlt />

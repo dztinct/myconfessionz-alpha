@@ -10,7 +10,7 @@ export default {
         bRed: '#FF0000',
       },
       animation: {
-        zoom: 'zoom 1s ease-in-out infinite', // Custom animation
+        zoom: 'zoom 3s ease-in-out infinite', // Custom animation
         'slide-in-right': 'slide-in-right 2s ease-out forwards',
         'slide-in-left': 'slide-in-left 2s ease-out backwards',
       },
