@@ -92,10 +92,21 @@ export const postStore = create((set) => ({
     }
   },
   
-
-
-
+  singlePost: async (id) => {
+    set({ isLoading: true })
+    try {
+      const response = await axios.get(`${API_URL}/single-post/${id}`)
+      const { postData } = response.data
+      // console.log(response.data)
+      set({isLoading : false, post: postData})
+      return response.data
+    } catch (error) {
+      set({
+        error: error.response?.data?.error || "Error logging in",
+        isLoading: false,
+      });
+      throw error;
+    }
+  },  
   
-
-
-  }))
+}))

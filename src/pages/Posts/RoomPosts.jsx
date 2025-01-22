@@ -13,16 +13,6 @@ import { TbShare3 } from "react-icons/tb";
 import { useParams } from "react-router-dom";
 import { postStore } from '../../store/postStore';
 
-
-// <HiOutlineHandThumbUp />
-// <HiHandThumbUp />
-
-// <BsChatSquareDots />
-// <BsChatSquareDotsFill />
-
-// <FaShare />
-// <TbShare3 />
-
 const RoomPosts = () => {
   const { post, fetchRoom } = postStore();
   const { room } = useParams();
@@ -34,13 +24,7 @@ const RoomPosts = () => {
     fetchPosts();
   }, [fetchRoom]);
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="h-screen w-screen bg-black flex justify-center items-center">
-  //       <img src={logo} alt="brand-logo" />
-  //     </div>
-  //   );
-  // }
+
 
   // If no posts are available
   if (!post || post.length === 0) {

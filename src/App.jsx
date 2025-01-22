@@ -29,6 +29,7 @@ import CreatePost from "./pages/Posts/CreatePost"
 import RoomPosts from "./pages/Posts/RoomPosts"
 import UserProfile from "./pages/UserProfile"
 import ChangeUsername from "./pages/ChangeUsername"
+import SinglePost from "./pages/Posts/SinglePost"
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore()
@@ -134,6 +135,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ChangeUsername />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/single-post/:id"
+            element={
+              <ProtectedRoute>
+                <SinglePost />
               </ProtectedRoute>
             }
           />

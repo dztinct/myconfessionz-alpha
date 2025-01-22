@@ -54,7 +54,7 @@ const ExplorePosts = () => {
       {post.map((singlePost, idx) => (
         <section className="flex flex-row flex-wrap mx-auto" key={idx}>
           {/* Card Component */}
-          <div className="transition-all duration-150 flex w-full px-4 py-1 md:w-[80%] sm:w-[80%] mx-auto">
+          <div className="transition-all duration-150 flex w-full px-8 py-1 md:w-[80%] sm:w-[80%] mx-auto">
             <div className="flex flex-col items-stretch min-h-full pb-4 mb-6 transition-all duration-150 bg-white rounded-lg shadow-lg hover:shadow-2xl">
               <section className="px-4 py-2 mt-2">
                 <div className="flex items-center justify-between">

@@ -18,12 +18,12 @@ const LoggedOutNav = () => {
         <nav className="fixed top-0 left-0 w-full bRed bg-bRed text-white px-4 py-5 z-10">
             <div className="container mx-auto flex justify-between items-center">
                 {/* Brand Logo */}
-                <Link to="/" className="text-xl font-bold flex items-center">
+                <a href="/" className="text-xl font-bold flex items-center">
                 <span>
                     <img src={logo} alt="brand-logo" width={25} height={25} />
                 </span>
                 <span>Myconfessionz</span>
-                </Link>
+                </a>
 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex space-x-6">

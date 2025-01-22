@@ -48,12 +48,12 @@ const logOutCounselor = async () => {
         <nav className="fixed top-0 left-0 w-full bRed bg-bRed text-white px-4 py-5 z-10">
             <div className="container mx-auto flex justify-between items-center">
             {/* Brand Logo */}
-            <Link to="/" className="text-xl font-bold flex items-center">
+            <a href="/" className="text-xl font-bold flex items-center">
                 <span>
                 <img src={logo} alt="brand-logo" width={25} height={25} />
                 </span>
                 <span>Myconfessionz</span>
-            </Link>
+            </a>
 
             {/* Desktop Menu */}
             <div className="hidden md:flex space-x-6">
@@ -101,6 +101,8 @@ const logOutCounselor = async () => {
                 <FaSignInAlt />
                 <span>Logout</span>
                 </span>
+                &nbsp;&nbsp; N <span>Deposit</span>
+                <br />&nbsp;&nbsp; B <span>N12000</span>
                 {/* <Link to="/dashboard">Dashboard</Link> */}
                 {/* <Link to="/profile">Profile</Link> */}
                 {/* <button onClick={logOut}>Logout</button> */}

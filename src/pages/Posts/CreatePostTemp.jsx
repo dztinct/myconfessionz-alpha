@@ -44,14 +44,28 @@ const CreatePostTemp = () => {
                         {...register("room")}
                         name='room'
                         >
-                            <option value="">Select Room</option>
-                            <option value="Love">Love</option>
-                            <option value="Heartbreak">Heartbreak</option>
-                            <option value="Domestic Violence">Domestic Violence</option>
-                            <option value="Murder">Murder</option>
-                            <option value="Child Abuse">Child Abuse</option>
-                            <option value="Mystery">Mystery</option>
-                            <option value="Crime">Crime</option>
+                    <option selected value="">Select Room To share In</option>
+                    <option value="Love">Love</option>
+                    <option value="Heartbreak">Heartbreak</option>
+                    <option value="Marriage">Marriage</option>
+                    <option value="Domestic Violence">Domestic Violence</option>
+                    <option value="Abused">Abused</option>
+                    <option value="Harassed">Harassed</option>
+                    <option value="Hoe Story">Hoe Story</option>
+                    <option value="Assault">Assault</option>
+                    <option value="Cheating">Cheating</option>
+                    <option value="Entertaining">Entertaining</option>
+                    <option value="Funny">Funny</option>
+                    <option value="Shocking">Shocking!</option>
+                    <option value="Murder">Murder</option>
+                    <option value="Sinful">Sinful</option>
+                    <option value="Daily Gist">Daily Gist</option>
+                    <option value="Personal Problem">Personal Problem</option>
+                    <option value="Health issues">Health issues</option>
+                    <option value="Politics">Politics</option>
+                    <option value="Supernatural events">Supernatural events</option>
+                    <option value="Ghost stories">Ghost stories</option>
+                    <option value="Others">Others</option>
                         </select>
                     </div>
                     {errors.room && <p className="text-white mb-2">{errors.room.message}</p>}
