@@ -57,20 +57,20 @@ const logOutCounselor = async () => {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex space-x-6">
-                <Link
-                to="/login"
+                <a
+                href="/login"
                 className="flex items-center space-x-1 hover:text-gray-200 transition duration-300"
                 >
                 <FaUser />
                 <span>{user ? user ? user.username : "" : ""}</span>
-                </Link>
-                <Link
-                to="/register"
+                </a>
+                <a
+                href="/register"
                 className="flex items-center space-x-1 hover:text-gray-200 transition duration-300"
                 >
                 <FaSignInAlt />
                 <span onClick={user ? logOutUser : logOutCounselor}>Logout</span>
-                </Link>
+                </a>
             </div>
 
             {/* Mobile Menu Toggle Button */}
@@ -86,14 +86,14 @@ const logOutCounselor = async () => {
             {/* Mobile Menu */}
             {isOpen && (
             <div className="md:hidden mt-3 space-y-2 bg-red-700 p-4 rounded-lg">
-                <Link
-                to="/profile"
+                <a
+                href="/profile"
                 className="flex items-center space-x-2 text-white hover:bg-red-800 p-2 rounded transition duration-300"
                 onClick={handleLinkClick} // Close menu on click
                 >
                 <FaUser />
                 <span>{user ? user.username : ""}</span>
-                </Link>
+                </a>
                 <span
                 onClick={user ? logOutUser : logOutCounselor}
                 className="flex items-center space-x-2 text-white hover:bg-red-800 p-2 rounded transition duration-300"
@@ -103,8 +103,8 @@ const logOutCounselor = async () => {
                 </span>
                 &nbsp;&nbsp; N <span>Deposit</span>
                 <br />&nbsp;&nbsp; B <span>N12000</span>
-                {/* <Link to="/dashboard">Dashboard</Link> */}
-                {/* <Link to="/profile">Profile</Link> */}
+                {/* <a href="/dashboard">Dashboard</a> */}
+                {/* <a href="/profile">Profile</a> */}
                 {/* <button onClick={logOut}>Logout</button> */}
             </div>
             )}
