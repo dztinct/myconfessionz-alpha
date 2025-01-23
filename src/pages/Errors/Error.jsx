@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import logo from '../../images/myconfessionz.png';
 import '../../css/ErrorPage.css'; // Assuming you save the CSS in this file
 
-const ErrorPage = () => {
+const Error = () => {
   return (
     <div className="bg-black h-screen flex flex-col justify-center items-center">
         <div className="w-16 h-12 lg:w-20 lg:h-20 md:w-16 md:h-16 object-cover mb-8 emoji-404 text-black">
@@ -26,4 +26,4 @@ const ErrorPage = () => {
   );
 };
 
-export default ErrorPage;
+export default Error;
