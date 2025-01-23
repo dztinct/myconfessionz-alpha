@@ -19,11 +19,6 @@ const LoggedInFooter = () => {
               <span className="text-xs mt-1">Explore</span>
             </a>
 
-            {/* Rooms */}
-            <a href="/rooms" className="flex flex-col items-center cursor-pointer">
-              <FaUsers size={24} />
-              <span className="text-xs mt-1">Rooms</span>
-            </a>
 
             {/* Confess - Center Button */}
             <a href="/create-post" className="flex flex-col items-center cursor-pointer">
@@ -31,6 +26,12 @@ const LoggedInFooter = () => {
               <span className="text-xs mt-1">Confess</span>
             </a>
 
+            {/* Rooms */}
+            <a href="/rooms" className="flex flex-col items-center cursor-pointer">
+              <FaUsers size={24} />
+              <span className="text-xs mt-1">Rooms</span>
+            </a>
+            
             {/* Chat */}
             <a href="/user-chat" className="flex flex-col items-center cursor-pointer">
               <FaCommentDots size={24} />
@@ -38,16 +39,16 @@ const LoggedInFooter = () => {
             </a>
 
             {/* Profile */}
-            <a href="/user-profile" className="flex flex-col items-center cursor-pointer">
+            {/* <a href="/user-profile" className="flex flex-col items-center cursor-pointer">
               <FaUser size={24} />
               <span className="text-xs mt-1">Profile</span>
-            </a>
+            </a> */}
 
             {/* Counselors */}
-            <a href="" className="flex flex-col items-center cursor-pointer">
+            {/* <a href="" className="flex flex-col items-center cursor-pointer">
               <FaComments size={24} />
               <span className="text-xs mt-1">Counselors</span>
-            </a>
+            </a> */}
           </div>
         </nav>
     </div>
