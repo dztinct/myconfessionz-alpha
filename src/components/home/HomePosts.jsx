@@ -30,7 +30,7 @@ const HomePosts = () => {
 
     // Call the API to update the backend
     axios
-      .post(`http://localhost:8000/api/user-like-post/${postId}`)
+      .post(`https://myconfessionz.coinancewealth.com/api/user-like-post/${postId}`)
       .then((response) => {
         console.log(response.data);
       })
@@ -44,7 +44,7 @@ const HomePosts = () => {
   
     useEffect(() => {
       axios
-        .get("http://localhost:8000/api/user-like-post-status")
+        .get("https://myconfessionz.coinancewealth.com/api/user-like-post-status")
         .then((response) => {
           const likeStatus = (response.data || []).reduce((acc, post) => {
             acc[post.id] = post.isLiked; // Store like status for each post
@@ -57,7 +57,7 @@ const HomePosts = () => {
         });
 
         axios
-        .get("http://localhost:8000/api/posts-like-count")
+        .get("https://myconfessionz.coinancewealth.com/api/posts-like-count")
         .then((response) => {
           console.log("like count", response.data)
           const counts = response.data.data.reduce((acc, post) => {

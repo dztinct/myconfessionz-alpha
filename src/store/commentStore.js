@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = "https://myconfessionz.coinancewealth.com/api";
 axios.defaults.withCredentials = true;
 
 // Axios Interceptor for Token Injection

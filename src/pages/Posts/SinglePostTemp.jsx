@@ -89,7 +89,7 @@ const SinglePost = () => {
 
     // Call the API to update the backend
     axios
-      .post(`http://localhost:8000/api/user-like-post/${postId}`)
+      .post(`https://myconfessionz.coinancewealth.com/api/user-like-post/${postId}`)
       .then((response) => {
         console.log(response.data);
       })
@@ -128,7 +128,7 @@ const SinglePost = () => {
   
     // Call the API to update the backend
     axios
-      .post(`http://localhost:8000/api/user-like-comment/${postId}/${commentId}`)
+      .post(`https://myconfessionz.coinancewealth.com/api/user-like-comment/${postId}/${commentId}`)
       .then((response) => {
         console.log(response.data);
       })
@@ -141,7 +141,7 @@ const SinglePost = () => {
   
     useEffect(() => {
       axios
-        .get("http://localhost:8000/api/user-like-post-status")
+        .get("https://myconfessionz.coinancewealth.com/api/user-like-post-status")
         .then((response) => {
           const likeStatus = (response.data || []).reduce((acc, post) => {
             acc[post.id] = post.isLiked; // Store like status for each post
@@ -154,7 +154,7 @@ const SinglePost = () => {
         });
 
         axios
-        .get("http://localhost:8000/api/posts-like-count")
+        .get("https://myconfessionz.coinancewealth.com/api/posts-like-count")
         .then((response) => {
           console.log("like count", response.data)
           const counts = response.data.data.reduce((acc, post) => {
@@ -172,7 +172,7 @@ const SinglePost = () => {
     useEffect(() => {
       // Fetch like status for comments
       axios
-        .get("http://localhost:8000/api/user-like-comment-status")
+        .get("https://myconfessionz.coinancewealth.com/api/user-like-comment-status")
         .then((response) => {
           const likeStatus = (response.data || []).reduce((acc, comment) => {
             if (!acc[comment.postId]) {
@@ -189,7 +189,7 @@ const SinglePost = () => {
     
       // Fetch like counts for comments
       axios
-      .get("http://localhost:8000/api/user-comment-like-count")
+      .get("https://myconfessionz.coinancewealth.com/api/user-comment-like-count")
       .then((response) => {
         console.log("Comment like counts here:", response.data.comments);
         const counts = response.data.comments.reduce((acc, comment) => {

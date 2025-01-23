@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_URL = "http://localhost:8000/api";
+const API_URL = "https://myconfessionz.coinancewealth.com/api";
 axios.defaults.withCredentials = true;
 
 // Axios Interceptor for Token Injection
@@ -44,7 +44,8 @@ export const useAuthStore = create((set) => ({
       return response.data;
     } catch (error) {
       set({
-        error: error.response?.data?.error || "Error signing up",
+        // error: error.response?.data?.error || "Error signing up",
+        error: error.response?.data?.error || error,
         isLoading: false,
       });
       throw error;
