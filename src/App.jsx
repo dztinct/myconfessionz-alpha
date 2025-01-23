@@ -48,7 +48,7 @@ const RedirectAuthenticated = ({ children }) => {
   const isAuthenticatedCounselor = useAuthStoreCounselor((state) => state.isAuthenticated);
 
   if (isAuthenticated || isAuthenticatedCounselor) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/create-post" replace />;
   }
 
   return children;
