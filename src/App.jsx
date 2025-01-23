@@ -5,7 +5,7 @@ import Footer from "./components/Footer"
 import Explore from "./pages/Explore"
 import Login from "./pages/auth/Login"
 import Register from "./pages/auth/Register"
-import Error from "./pages/errors/Error"
+// import Error from "pages/errors/Error"
 import Home from "./pages/Home"
 import { Toaster } from "react-hot-toast"
 import { useAuthStore } from "./store/authStore"
@@ -259,7 +259,7 @@ const App = () => {
             }
           />
 
-          <Route path="*" element={<Error />} />
+          {/* <Route path="*" element={<Error />} /> */}
         </Routes>
         <Toaster />
         <Footer />
