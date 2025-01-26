@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 const LoggedInFooter = () => {
   return (
     <div>
-        <nav className="fixed bottom-0 w-full bg-bRed text-white py-2 px-4">
+        <nav className="fixed bottom-0 w-full bg-bRed text-white py-2 px-8">
           <div className="container mx-auto flex justify-between items-center">
             {/* Home */}
             <a href="/" className="flex flex-col items-center cursor-pointer">
@@ -33,16 +33,16 @@ const LoggedInFooter = () => {
             </a>
             
             {/* Chat */}
-            <a href="/user-chat" className="flex flex-col items-center cursor-pointer">
+            {/* <a href="/user-chat" className="flex flex-col items-center cursor-pointer">
               <FaCommentDots size={24} />
               <span className="text-xs mt-1">Chat</span>
-            </a>
+            </a> */}
 
             {/* Profile */}
-            {/* <a href="/user-profile" className="flex flex-col items-center cursor-pointer">
+            <a href="/user-profile" className="flex flex-col items-center cursor-pointer">
               <FaUser size={24} />
               <span className="text-xs mt-1">Profile</span>
-            </a> */}
+            </a>
 
             {/* Counselors */}
             {/* <a href="" className="flex flex-col items-center cursor-pointer">
